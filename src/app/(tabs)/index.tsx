@@ -9,7 +9,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import WallpaperCard from "../../components/WallpaperCard";
 import { WALLPAPERS } from "../../constants/Data";
 
@@ -54,44 +57,54 @@ export default function WallpapersScreen() {
   const FILTERS: Filter[] = ["All", "Free", "Premium"];
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#111", paddingTop: insets.top }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
       {/* 🔥 HEADER */}
-      <View style={{ paddingHorizontal: 20, marginBottom: 10 }}>
+      <View style={{ paddingHorizontal: 20, marginBottom: 25, marginTop: 5 }}>
         {showSearch ? (
+          // 🔍 SEARCH MODE
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: "#1c1c1e",
+              backgroundColor: "#222",
               borderRadius: 999,
-              paddingHorizontal: 14,
-              height: 44,
-              gap: 10,
+              height: 50,
+              paddingHorizontal: 6,
             }}
           >
-            <FontAwesome6 name="magnifying-glass" size={14} color="#888" />
+            {/* Search Icon */}
+            <View className="w-[40] h-[40] flex items-center justify-center rounded-full">
+              <FontAwesome6 name="magnifying-glass" size={14} color="#888" />
+            </View>
 
+            {/* Input */}
             <TextInput
               autoFocus
               value={search}
               onChangeText={setSearch}
               placeholder="Search..."
-              placeholderTextColor="#666"
-              style={{ flex: 1, color: "#fff", fontSize: 14 }}
+              placeholderTextColor="#555"
+              style={{
+                flex: 1,
+                color: "#fff",
+                fontSize: 18,
+                marginLeft: 5,
+              }}
             />
 
-            {!!search && (
-              <TouchableOpacity
-                onPress={() => {
-                  setSearch("");
-                  setShowSearch(false);
-                }}
-              >
-                <FontAwesome6 name="xmark" size={14} color="#888" />
-              </TouchableOpacity>
-            )}
+            {/* ❌ CLOSE BUTTON (ALWAYS visible) */}
+            <TouchableOpacity
+              onPress={() => {
+                setSearch("");
+                setShowSearch(false);
+              }}
+              className="w-[40] h-[40] flex items-center justify-center bg-[#111] rounded-full"
+            >
+              <FontAwesome6 name="xmark" size={16} color="#aaa" />
+            </TouchableOpacity>
           </View>
         ) : (
+          // 🏠 NORMAL MODE
           <View
             style={{
               flexDirection: "row",
@@ -112,15 +125,15 @@ export default function WallpapersScreen() {
             <TouchableOpacity
               onPress={() => setShowSearch(true)}
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: 18,
-                backgroundColor: "#1c1c1e",
+                width: 42,
+                height: 42,
+                borderRadius: 999,
+                backgroundColor: "#222",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <FontAwesome6 name="magnifying-glass" size={14} color="#fff" />
+              <FontAwesome6 name="magnifying-glass" size={17} color="#fff" />
             </TouchableOpacity>
           </View>
         )}
@@ -132,7 +145,7 @@ export default function WallpapersScreen() {
           flexDirection: "row",
           paddingHorizontal: 20,
           gap: 10,
-          marginBottom: 15,
+          marginBottom: 25,
         }}
       >
         {FILTERS.map((f) => (
@@ -140,16 +153,16 @@ export default function WallpapersScreen() {
             key={f}
             onPress={() => setFilter(f)}
             style={{
-              paddingHorizontal: 16,
-              paddingVertical: 6,
+              paddingHorizontal: 20,
+              paddingVertical: 8,
               borderRadius: 999,
-              backgroundColor: filter === f ? "#019CDF" : "#1c1c1e",
+              backgroundColor: filter === f ? "#019CDF" : "#222",
             }}
           >
             <Text
               style={{
                 color: "#fff",
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: "600",
               }}
             >
@@ -167,9 +180,11 @@ export default function WallpapersScreen() {
         contentContainerStyle={{
           paddingHorizontal: 20,
           paddingBottom: 120,
-          gap: 18,
         }}
-        columnWrapperStyle={{ gap: 18 }}
+        columnWrapperStyle={{
+          justifyContent: "space-between", // 🔥 KEY FIX
+          marginBottom: 18,
+        }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <WallpaperCard
@@ -180,6 +195,6 @@ export default function WallpapersScreen() {
           />
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }

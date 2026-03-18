@@ -3,14 +3,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
+  Animated,
   Dimensions,
   FlatList,
   Image,
+  ImageBackground,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import WallpaperLogo from "../../../assets/WallpaperLogo.jpeg";
 
 const { width, height } = Dimensions.get("window");
 
@@ -41,6 +47,9 @@ export default function Onboarding() {
   const [active, setActive] = useState(0);
   const flatRef = useRef<FlatList>(null);
 
+  // Dote Animation
+  const scrollX = useRef(new Animated.Value(0)).current;
+
   const isLast = active === SLIDES.length - 1;
 
   const goNext = () => {
@@ -65,24 +74,28 @@ export default function Onboarding() {
   // Page 4 — Login screen
   if (active === SLIDES.length) {
     return (
-      <View
+      <SafeAreaView
         className="flex-1 bg-bg items-center justify-between px-8"
         style={{
-          paddingTop: insets.top + 40,
-          paddingBottom: insets.bottom + 32,
+          paddingTop: insets.top + 12,
+          paddingBottom: insets.bottom + 12,
         }}
       >
-        <Text className="text-white font-bold text-xl">Artifex Wallpaper</Text>
+        <Text className="text-white font-bold text-3xl">Artifex Wallpaper</Text>
 
         {/* Logo */}
-        <View className="items-center">
-          <View className="w-28 h-28 rounded-full bg-card items-center justify-center mb-10">
-            <Text className="text-white font-black text-5xl">A</Text>
+        <View className="items-center mt-[-100px]">
+          <View className="w-[203] h-[203] rounded-full bg-card items-center justify-center mb-10 overflow-hidden">
+            <ImageBackground
+              source={WallpaperLogo}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
           </View>
-          <Text className="text-white font-bold text-3xl mb-3">
+          <Text className="text-white font-bold text-4xl mb-5 mt-10">
             Join with Artifex
           </Text>
-          <Text className="text-muted text-sm text-center leading-6 px-4">
+          <Text className="text-[#444] text-2xl text-center leading-8 px-2">
             Step into the world of premium 8K art. Unlock exclusive wallpapers
             crafted by Artifex.
           </Text>
@@ -91,33 +104,38 @@ export default function Onboarding() {
         {/* Google Button */}
         <TouchableOpacity
           onPress={goToLogin}
-          className="w-full h-14 rounded-full bg-white items-center justify-center flex-row gap-3"
+          className="w-full h-[55] rounded-full bg-white items-center justify-center flex-row gap-3"
         >
           <AntDesign name="google" size={20} color="#111" />
-          <Text style={{ color: "#111111", fontWeight: "700", fontSize: 16 }}>
+          <Text style={{ color: "#111111", fontWeight: "700", fontSize: 18 }}>
             Continue with Google
           </Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View
+    <SafeAreaView
       className="flex-1 bg-bg"
       style={{ paddingBottom: insets.bottom + 12 }}
     >
       {/* Slides */}
-      <FlatList
+      <Animated.FlatList
         ref={flatRef}
         data={SLIDES}
         horizontal
         pagingEnabled
         scrollEnabled={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false }, // IMPORTANT for width animation
+        )}
+        scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(i) => i.id}
         renderItem={({ item, index }) => (
-          <View style={{ width }} className="items-center pt-14 px-8">
+          <View style={{ width }} className="items-center pt-14 px-10">
             {/* Image Card */}
             <View
               className="rounded-3xl overflow-hidden bg-card items-center justify-center"
@@ -132,26 +150,47 @@ export default function Onboarding() {
 
             {/* Dots */}
             <View className="flex-row items-center gap-2 mt-8 mb-7">
-              {SLIDES.map((_, i) => (
-                <View
-                  key={i}
-                  style={{
-                    width: i === active ? 24 : 8,
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: i === active ? "#2ABFBF" : "#333333",
-                  }}
-                />
-              ))}
+              {SLIDES.map((_, i) => {
+                const inputRange = [
+                  (i - 1) * width,
+                  i * width,
+                  (i + 1) * width,
+                ];
+
+                const dotWidth = scrollX.interpolate({
+                  inputRange,
+                  outputRange: [8, 24, 8],
+                  extrapolate: "clamp",
+                });
+
+                const opacity = scrollX.interpolate({
+                  inputRange,
+                  outputRange: [0.3, 1, 0.3],
+                  extrapolate: "clamp",
+                });
+
+                return (
+                  <Animated.View
+                    key={i}
+                    style={{
+                      width: dotWidth,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: "#019CDF",
+                      opacity,
+                    }}
+                  />
+                );
+              })}
             </View>
 
             <Text
-              className="text-white font-bold text-center mb-3"
-              style={{ fontSize: 24, lineHeight: 32 }}
+              className="text-white font-bold text-center mb-5"
+              style={{ fontSize: 32, lineHeight: 37 }}
             >
               {item.title}
             </Text>
-            <Text className="text-muted text-sm text-center leading-6 px-2">
+            <Text className="text-[#444] text-2xl text-center leading-8 px-2">
               {item.sub}
             </Text>
           </View>
@@ -159,23 +198,25 @@ export default function Onboarding() {
       />
 
       {/* Bottom Buttons */}
-      <View className="flex-row items-center px-8 gap-4 pt-4">
+      <View
+        className={`flex-row items-center px-10 gap-4 pt-4 ${active == 0 ? "justify-end" : "justify-between"}`}
+      >
         {active > 0 && (
           <TouchableOpacity
             onPress={goBack}
-            className="w-12 h-12 rounded-full bg-card items-center justify-center"
+            className="w-[55] h-[55] rounded-full bg-card items-center justify-center"
           >
             <Ionicons name="chevron-back" size={22} color="#fff" />
           </TouchableOpacity>
         )}
         <TouchableOpacity
           onPress={isLast ? () => setActive(SLIDES.length) : goNext}
-          className="flex-1 h-14 rounded-full items-center justify-center"
-          style={{ backgroundColor: "#2ABFBF" }}
+          className="h-[55] w-[100] rounded-full items-center justify-center"
+          style={{ backgroundColor: "#019CDF" }}
         >
-          <Text className="text-white font-bold text-base">Next</Text>
+          <Text className="text-white font-bold text-[18px]">Next</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -14,7 +14,7 @@ export default function CustomTabBar({ state, navigation }) {
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
-        paddingTop: 10,
+        // paddingTop: 10,
         paddingBottom: insets.bottom + 8, // 👈 IMPORTANT
       }}
     >
@@ -50,7 +50,7 @@ export default function CustomTabBar({ state, navigation }) {
                 style={{
                   color: isFocused ? "#019CDF" : "#aaa",
                   fontSize: 11,
-                  marginTop: 3,
+                  marginTop: 5,
                 }}
               >
                 {route.name}
