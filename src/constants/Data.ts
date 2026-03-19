@@ -33,6 +33,7 @@ const W5 = require("../../assets/onboarding/W5.jpg");
 const W6 = require("../../assets/onboarding/W6.jpg");
 const W7 = require("../../assets/onboarding/W7.jpg");
 const W8 = require("../../assets/onboarding/W8.jpg");
+const W9 = require("../../assets/onboarding/w1.jpeg");
 
 // Banner images for collection page carousel
 const B1 = require("../../assets/onboarding/B1.jpg");
@@ -150,9 +151,40 @@ export const WALLPAPERS: Wallpaper[] = [
     views: "8.3K",
     likes: "47K",
   },
+    {
+    id: "9",
+    title: "Desert Dusk",
+    image: W9,
+    collectionId: "c2",
+    collectionName: "Pixelated Patterns",
+    isFree: false,
+    dimensions: "7680 x 7680 px",
+    license:
+      "Personal use only, no commercial use allowed, for setups credits are required",
+    views: "8.3K",
+    likes: "47K",
+  },
 ];
 
 export const COLLECTIONS: Collection[] = [
+  {
+    id: "c1",
+    title: "Collection 1",
+    coverImage: W1,
+    bannerImage: W2,
+    isPremium: false,
+    price: 3,
+    wallpaperCount: 3,
+  },
+  {
+    id: "c1",
+    title: "Collection 1",
+    coverImage: W1,
+    bannerImage: W2,
+    isPremium: false,
+    price: 3,
+    wallpaperCount: 3,
+  },
   {
     id: "c1",
     title: "Collection 1",

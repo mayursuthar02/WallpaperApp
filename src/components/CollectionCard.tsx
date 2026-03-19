@@ -123,20 +123,20 @@ export default function CollectionCard({
           style={{
             position: "absolute",
             top: 10,
-            right: 10,
-            backgroundColor: "rgba(0,0,0,0.7)",
+            left: 10,
+            backgroundColor: "#222",
             paddingHorizontal: 10,
-            paddingVertical: 4,
+            paddingVertical: 6,
             borderRadius: 999,
             flexDirection: "row",
             alignItems: "center",
             gap: 4,
           }}
         >
-          <Ionicons name="star" size={12} color="#FFB800" />
+          <Ionicons name="star" size={12} color="#FFA600" />
           <Text
             style={{
-              color: "#FFB800",
+              color: "#FFA600",
               fontSize: 11,
               fontWeight: "700",
             }}

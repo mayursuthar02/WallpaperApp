@@ -1,25 +1,68 @@
 import { FontAwesome6 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
+import * as FileSystem from "expo-file-system/legacy";
+import { Image } from "expo-image";
+import * as MediaLibrary from "expo-media-library";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useState } from "react";
-import { Dimensions, Image, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useState } from "react";
+import {
+  Alert,
+  Animated,
+  Dimensions,
+  Platform,
+  Image as RNImage,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import PurchaseSheet from "../../components/PurchaseSheet";
-import { COLLECTIONS, WALLPAPERS } from "../../constants/Data";
+import { WALLPAPERS } from "../../constants/Data";
 
 const { width, height } = Dimensions.get("window");
 
 export default function WallpaperDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
+
   const [showInfo, setShowInfo] = useState(false);
-  const [showPurchase, setShowPurchase] = useState(false);
   const [isFav, setIsFav] = useState(false);
-  const [purchased, setPurchased] = useState(false);
+  const [showApply, setShowApply] = useState(false);
 
   const wallpaper = WALLPAPERS.find((w) => w.id === id);
-  const collection = COLLECTIONS.find((c) => c.id === wallpaper?.collectionId);
+  // Animation
+  const sheetY = useState(new Animated.Value(height))[0];
+  const imageScale = useState(new Animated.Value(1))[0];
+  const imageY = useState(new Animated.Value(0))[0];
+
+  // BottomSheet Open
+  const openSheet = () => {
+    setShowInfo(true);
+
+    Animated.parallel([
+      Animated.spring(sheetY, {
+        toValue: height * 0.55,
+        useNativeDriver: true,
+      }),
+      Animated.spring(imageY, {
+        toValue: -60, // 👈 move image UP (adjust this)
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+  // BottomSheet Close
+  const closeSheet = () => {
+    Animated.parallel([
+      Animated.spring(sheetY, {
+        toValue: height,
+        useNativeDriver: true,
+      }),
+      Animated.spring(imageY, {
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setShowInfo(false));
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -27,15 +70,10 @@ export default function WallpaperDetail() {
       AsyncStorage.getItem("favorites").then((v) => {
         if (v) setIsFav(JSON.parse(v).includes(wallpaper.id));
       });
-      AsyncStorage.getItem("purchased").then((v) => {
-        if (v) setPurchased(JSON.parse(v).includes(wallpaper.collectionId));
-      });
     }, [wallpaper]),
   );
 
   if (!wallpaper) return null;
-
-  const canAccess = wallpaper.isFree || purchased;
 
   const toggleFav = async () => {
     const v = await AsyncStorage.getItem("favorites");
@@ -43,30 +81,52 @@ export default function WallpaperDetail() {
     const next = arr.includes(wallpaper.id)
       ? arr.filter((f) => f !== wallpaper.id)
       : [...arr, wallpaper.id];
+
     await AsyncStorage.setItem("favorites", JSON.stringify(next));
     setIsFav(!isFav);
   };
 
-  const handlePurchaseSuccess = async () => {
-    const v = await AsyncStorage.getItem("purchased");
-    const arr: string[] = v ? JSON.parse(v) : [];
-    if (!arr.includes(wallpaper.collectionId)) {
-      await AsyncStorage.setItem(
-        "purchased",
-        JSON.stringify([...arr, wallpaper.collectionId]),
-      );
+  // Download Wallpaper Feature
+  const downloadWallpaper = async () => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission required");
+        return;
+      }
+
+      let uri = wallpaper.image;
+
+      // 🔥 FIX HERE
+      if (typeof uri !== "string") {
+        const asset = RNImage.resolveAssetSource(uri);
+        uri = asset.uri;
+      }
+
+      const fileUri = FileSystem.cacheDirectory + "wallpaper.jpg";
+
+      const downloaded = await FileSystem.downloadAsync(uri, fileUri);
+
+      const asset = await MediaLibrary.createAssetAsync(downloaded.uri);
+      await MediaLibrary.createAlbumAsync("Wallpaper", asset, false);
+
+      Alert.alert("Success ✅", "Wallpaper saved!");
+    } catch (e) {
+      console.log("DOWNLOAD ERROR:", e);
+      Alert.alert("Error", "Failed to save image");
     }
-    setPurchased(true);
-    setShowPurchase(false);
   };
 
   return (
-    // <Safe></Safe>
     <View style={{ flex: 1, backgroundColor: "#111" }}>
       {/* ── Full Screen Image ── */}
-      <Image
+      <Animated.Image
         source={wallpaper.image}
-        style={{ width, height }}
+        style={{
+          width,
+          height,
+          transform: [{ translateY: imageY }],
+        }}
         resizeMode="cover"
       />
 
@@ -78,7 +138,6 @@ export default function WallpaperDetail() {
           left: 0,
           right: 0,
           flexDirection: "row",
-          alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: 16,
         }}
@@ -111,135 +170,95 @@ export default function WallpaperDetail() {
         </TouchableOpacity>
       </View>
 
-      {/* ── Bottom Buttons ── */}
+      {/* ── Bottom Actions ── */}
       <View
         style={{
           position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          paddingBottom: insets.bottom + 20,
-          paddingHorizontal: 20,
+          bottom: insets.bottom + 20,
+          left: 20,
+          right: 20,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 12,
         }}
       >
-        {canAccess ? (
-          /* Download / Apply */
-          <View
+        {/* Info */}
+        <TouchableOpacity
+          onPress={openSheet}
+          style={{
+            width: 52,
+            height: 52,
+            borderRadius: 26,
+            backgroundColor: "#222",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <FontAwesome6 name="bars" size={18} color="#fff" />
+        </TouchableOpacity>
+
+        {/* Download (COMMON) */}
+        <TouchableOpacity
+          onPress={downloadWallpaper}
+          style={{
+            flex: 1,
+            height: 52,
+            borderRadius: 999,
+            backgroundColor: "#222",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "600" }}>Download</Text>
+        </TouchableOpacity>
+
+        {/* 🔥 ONLY ANDROID */}
+        {Platform.OS === "android" && (
+          <TouchableOpacity
+            onPress={() => setShowApply(true)}
             style={{
-              position: "absolute",
-              bottom: insets.bottom + 20,
-              left: 20,
-              right: 20,
-              flexDirection: "row",
+              flex: 1,
+              height: 52,
+              borderRadius: 999,
+              backgroundColor: "#019CDF",
               alignItems: "center",
-              gap: 12,
+              justifyContent: "center",
             }}
           >
-            {/* Info Button */}
-            <TouchableOpacity
-              onPress={() => setShowInfo(true)}
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: 26,
-                backgroundColor: "#222",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <FontAwesome6 name="bars" size={18} color="#fff" />
-            </TouchableOpacity>
-
-            {/* Download */}
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                height: 52,
-                borderRadius: 999,
-                backgroundColor: "#222",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600" }}>Download</Text>
-            </TouchableOpacity>
-
-            {/* Apply */}
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                height: 52,
-                borderRadius: 999,
-                backgroundColor: "#019CDF",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "700" }}>Apply</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          /* Purchase Buttons */
-          <View style={{ gap: 12 }}>
-            <TouchableOpacity
-              onPress={() => setShowPurchase(true)}
-              style={{
-                height: 56,
-                borderRadius: 999,
-                backgroundColor: "#019CDF",
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                gap: 8,
-              }}
-            >
-              <FontAwesome6 name="layer-group" size={16} color="#fff" />
-              <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
-                Buy Collection ${collection?.price ?? 3}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={{
-                height: 56,
-                borderRadius: 999,
-                backgroundColor: "#fff",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#222", fontWeight: "700", fontSize: 15 }}>
-                Unlock All – Go Premium
-              </Text>
-            </TouchableOpacity>
-          </View>
+            <Text style={{ color: "#fff", fontWeight: "700" }}>Apply</Text>
+          </TouchableOpacity>
         )}
       </View>
 
       {/* ── Info Bottom Sheet ── */}
       {showInfo && (
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setShowInfo(false)}
+        <Animated.View
+          pointerEvents={showInfo ? "auto" : "none"}
           style={{
             position: "absolute",
-            inset: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            justifyContent: "flex-end",
+            left: 0,
+            right: 0,
+            height,
+            transform: [{ translateY: sheetY }],
           }}
         >
-          <TouchableOpacity activeOpacity={1} onPress={() => {}}>
-            <BlurView
-              intensity={80} // 👈 increase blur
-              tint="dark"
-              style={{
-                borderTopLeftRadius: 28,
-                borderTopRightRadius: 28,
-                overflow: "hidden",
-                backgroundColor: "#111", // 👈 ADD THIS
-              }}
+          <BlurView
+            intensity={80}
+            tint="dark"
+            style={{
+              flex: 1,
+              borderTopLeftRadius: 28,
+              borderTopRightRadius: 28,
+              overflow: "hidden",
+              backgroundColor: "#111",
+            }}
+          >
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={closeSheet}
+              style={{ flex: 1 }}
             >
-              <View style={{ padding: 20, paddingBottom: insets.bottom + 20 }}>
+              <View style={{ padding: 20, paddingTop: 12 }}>
                 {/* Handle */}
                 <View
                   style={{
@@ -252,69 +271,82 @@ export default function WallpaperDetail() {
                   }}
                 />
 
-                {/* Top Row */}
+                {/* 🔥 NEW TOP ROW (like your design) */}
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    alignItems: "center",
                     marginBottom: 20,
                   }}
                 >
-                  {/* Author */}
                   <View
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
-                      backgroundColor: "rgba(255,255,255,0.05)",
-                      paddingHorizontal: 12,
-                      paddingVertical: 6,
-                      borderRadius: 999,
-                      gap: 8,
+                      backgroundColor: "#222",
+                      gap: 5,
                     }}
+                    className="rounded-full px-4 py-2"
                   >
                     <View
                       style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 14,
-                        backgroundColor: "#111",
+                        width: 25,
+                        height: 25,
+                        borderRadius: 15,
+                        backgroundColor: "#222",
                         alignItems: "center",
                         justifyContent: "center",
+                        overflow: "hidden",
                       }}
                     >
-                      <Text style={{ color: "#fff", fontWeight: "700" }}>
-                        A
-                      </Text>
+                      <Image
+                        source={require("../../../assets/images/icon.jpeg")}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                        }}
+                        contentFit="cover"
+                      />
                     </View>
 
-                    <Text style={{ color: "#fff", fontWeight: "600" }}>
+                    <Text
+                      style={{
+                        color: "#fff",
+                        fontWeight: "600",
+                        fontSize: "14px",
+                      }}
+                    >
                       Artifex
                     </Text>
 
                     <FontAwesome6
                       name="circle-check"
-                      size={12}
+                      size={15}
                       color="#019CDF"
                       solid
                     />
                   </View>
 
-                  {/* Stats */}
                   <View style={{ flexDirection: "row", gap: 10 }}>
                     {/* Views */}
                     <View
                       style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        backgroundColor: "rgba(255,255,255,0.05)",
-                        paddingHorizontal: 10,
+                        gap: 6,
+                        backgroundColor: "#222",
+                        paddingHorizontal: 12,
                         paddingVertical: 6,
                         borderRadius: 999,
-                        gap: 6,
                       }}
                     >
-                      <Text style={{ color: "#00BFFF", fontSize: 12 }}>
+                      <Text
+                        style={{
+                          color: "#00BFFF",
+                          fontSize: 13,
+                          fontWeight: "600",
+                        }}
+                      >
                         {wallpaper.views}
                       </Text>
                       <FontAwesome6 name="eye" size={12} color="#00BFFF" />
@@ -325,14 +357,20 @@ export default function WallpaperDetail() {
                       style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        backgroundColor: "rgba(255,255,255,0.05)",
-                        paddingHorizontal: 10,
+                        gap: 6,
+                        backgroundColor: "#222",
+                        paddingHorizontal: 12,
                         paddingVertical: 6,
                         borderRadius: 999,
-                        gap: 6,
                       }}
                     >
-                      <Text style={{ color: "#FF2D55", fontSize: 12 }}>
+                      <Text
+                        style={{
+                          color: "#FF2D55",
+                          fontSize: 13,
+                          fontWeight: "600",
+                        }}
+                      >
                         {wallpaper.likes}
                       </Text>
                       <FontAwesome6
@@ -348,46 +386,31 @@ export default function WallpaperDetail() {
                 {/* INFO CARD */}
                 <View
                   style={{
-                    backgroundColor: "rgba(255,255,255,0.06)",
+                    backgroundColor: "#222",
                     borderRadius: 20,
                     padding: 18,
                   }}
                 >
-                  {/* Title */}
-                  <View
+                  <Text
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
+                      color: "#fff",
+                      fontSize: 20,
+                      fontWeight: "700",
                       marginBottom: 14,
                     }}
                   >
-                    <FontAwesome6
-                      name="circle-info"
-                      size={16}
-                      color="#019CDF"
-                    />
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontSize: 18,
-                        fontWeight: "700",
-                      }}
-                    >
-                      INFO
-                    </Text>
-                  </View>
-                  {/* Rows */}
+                    INFO
+                  </Text>
+
                   <InfoRow
                     label="Collection"
                     value={wallpaper.collectionName}
                   />
                   <InfoRow label="Dimensions" value={wallpaper.dimensions} />
                   <InfoRow label="License" value={wallpaper.license} />
-                  <InfoRow label="Release Date" value="12 Aug 2025" />
                 </View>
 
-                {/* Favorite Button */}
+                {/* Favorite */}
                 <TouchableOpacity
                   onPress={toggleFav}
                   style={{
@@ -407,33 +430,66 @@ export default function WallpaperDetail() {
                     color="#FF2D55"
                     solid={isFav}
                   />
-                  <Text style={{ color: "#fff", fontWeight: "600" }}>
+                  <Text
+                    style={{ color: "#fff", fontWeight: "600" }}
+                    className="text-[15px]"
+                  >
                     {isFav ? "Saved to Favorites" : "Save to Favorites"}
                   </Text>
                 </TouchableOpacity>
               </View>
-            </BlurView>
-          </TouchableOpacity>
-        </TouchableOpacity>
+            </TouchableOpacity>
+          </BlurView>
+        </Animated.View>
       )}
 
-      {/* ── Purchase Sheet ── */}
-      <PurchaseSheet
-        visible={showPurchase}
-        collection={collection}
-        onClose={() => setShowPurchase(false)}
-        onSuccess={handlePurchaseSuccess}
-      />
+      {/* Apply Wallpaper */}
+      {Platform.OS === "android" && showApply && (
+        <View
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: "#111",
+            padding: 20,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+          }}
+        >
+          <Text style={{ color: "#fff", fontSize: 18, fontWeight: "700" }}>
+            Apply Wallpaper
+          </Text>
+
+          {["Home Screen", "Lock Screen", "Both"].map((type) => (
+            <TouchableOpacity
+              key={type}
+              onPress={() => {
+                Alert.alert("Coming Soon 🚀");
+                setShowApply(false);
+              }}
+              style={{
+                paddingVertical: 14,
+                marginTop: 12,
+                backgroundColor: "#222",
+                borderRadius: 12,
+              }}
+            >
+              <Text style={{ color: "#fff", textAlign: "center" }}>{type}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <View style={{ flexDirection: "row", gap: 8 }}>
-      <Text style={{ color: "#888", fontSize: 13, width: 90 }}>{label}</Text>
-      <Text style={{ color: "#888", fontSize: 13 }}>:</Text>
-      <Text style={{ color: "#fff", fontSize: 13, flex: 1 }}>{value}</Text>
+    <View style={{ flexDirection: "row", gap: 8 }} className="mb-1">
+      <Text style={{ color: "#888", fontSize: 15, width: 90 }}>{label}</Text>
+      <Text style={{ color: "#888", fontSize: 15 }}>:</Text>
+      <Text style={{ color: "#fff", fontSize: 15, flex: 1 }}>{value}</Text>
     </View>
   );
 }

@@ -4,7 +4,7 @@
     "slug": "wallpaperapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon.jpeg",
     "scheme": "wallpaperapp",
     "userInterfaceStyle": "dark",
     "splash": {
@@ -12,7 +12,11 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.artifex.wallpaper"
+      "bundleIdentifier": "com.artifex.wallpaper",
+      "icon": "./assets/images/icon.jpeg",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "We need access to save wallpapers to your gallery"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +26,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.artifex.wallpaper"
+      "package": "com.artifex.wallpaper",
+      "permissions": ["READ_MEDIA_IMAGES"]
     },
     "web": {
       "bundler": "metro",
