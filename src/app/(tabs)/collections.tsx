@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -181,19 +181,23 @@ export default function CollectionsScreen() {
         title="Free Collections"
         onSeeAll={() => router.push("/all-collections" as any)}
       />
-      <FlatList
-        data={freeCollections}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(i) => i.id}
-        contentContainerStyle={{ paddingLeft: 20, paddingRight: 8, gap: 12 }}
-        renderItem={({ item }) => (
-          <CollectionCard
-            item={item}
-            onPress={() => router.push(`/collection/${item.id}` as any)}
-          />
-        )}
+<FlatList
+  data={freeCollections}
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  snapToInterval={width * 0.85}
+  decelerationRate="fast"
+  contentContainerStyle={{ paddingHorizontal: 20 }}
+  renderItem={({ item }) => (
+    <View style={{ width: width * 0.85, marginRight: 16 }}>
+      <CollectionCard
+        item={item}
+        size="large"
+        onPress={() => router.push(`/collection/${item.id}` as any)}
       />
+    </View>
+  )}
+/>
 
       {/* ── Premium Collections ── */}
       <SectionHeader
@@ -205,13 +209,17 @@ export default function CollectionsScreen() {
         data={premiumCollections}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(i) => i.id}
-        contentContainerStyle={{ paddingLeft: 20, paddingRight: 8, gap: 12 }}
+        snapToInterval={width * 0.85}
+        decelerationRate="fast"
+        contentContainerStyle={{ paddingHorizontal: 20 }}
         renderItem={({ item }) => (
-          <CollectionCard
-            item={item}
-            onPress={() => router.push(`/collection/${item.id}` as any)}
-          />
+          <View style={{ width: width * 0.85, marginRight: 16 }}>
+            <CollectionCard
+              item={item}
+              size="large"
+              onPress={() => router.push(`/collection/${item.id}` as any)}
+            />
+          </View>
         )}
       />
     </ScrollView>

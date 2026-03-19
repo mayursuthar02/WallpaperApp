@@ -35,12 +35,14 @@ const W7 = require("../../assets/onboarding/W7.jpg");
 const W8 = require("../../assets/onboarding/W8.jpg");
 
 // Banner images for collection page carousel
-const B1 = require("../../assets/onboarding/W9.jpg");
-const B2 = require("../../assets/onboarding/W10.jpg");
+const B1 = require("../../assets/onboarding/B1.jpg");
+const B2 = require("../../assets/onboarding/B2.jpg");
+const B3 = require("../../assets/onboarding/B3.jpg");
 
 export const BANNER_IMAGES = [
   { id: "b1", image: B1, label: "Banner 1" },
   { id: "b2", image: B2, label: "Banner 2" },
+  { id: "b3", image: B3, label: "Banner 3" },
 ];
 
 export const WALLPAPERS: Wallpaper[] = [

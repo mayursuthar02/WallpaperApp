@@ -27,7 +27,11 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="wallpaper/[id]"
-          options={{ presentation: "fullScreenModal", animation: "fade" }}
+          options={{
+            presentation: "transparentModal",
+            animation: "fade_from_bottom", // 🔥 BEST
+            animationDuration: 250,
+          }}
         />
         <Stack.Screen
           name="collection/[id]"

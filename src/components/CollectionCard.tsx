@@ -1,115 +1,148 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
-import { Collection } from '../constants/Data';
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Collection } from "../constants/Data";
 
 type Props = {
   item: Collection;
   onPress: () => void;
-  /** 'small' = horizontal list card (default), 'large' = banner width */
-  size?: 'small' | 'large';
+  size?: "small" | "large";
   cardWidth?: number;
 };
 
 export default function CollectionCard({
   item,
   onPress,
-  size = 'small',
+  size = "small",
   cardWidth,
 }: Props) {
-  const W = cardWidth ?? (size === 'large' ? 320 : 176);
-  const H = size === 'large' ? 140 : 112;
+  const W = cardWidth ?? (size === "large" ? 320 : 176);
+  const H = size === "large" ? 180 : 112;
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      activeOpacity={0.85}
+      activeOpacity={0.9}
       style={{
         width: W,
         height: H,
-        borderRadius: 16,
-        overflow: 'hidden',
+        borderRadius: 22,
+        overflow: "hidden",
       }}
     >
-      {/* Cover */}
+      {/* Image */}
       <Image
         source={item.coverImage}
-        style={{ width: W, height: H }}
+        style={{ width: "100%", height: "100%" }}
         resizeMode="cover"
       />
 
-      {/* Gradient overlay */}
+      {/* Gradient Overlay */}
       <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.72)']}
+        colors={["transparent", "rgba(0,0,0,0.7)"]}
         style={{
-          position: 'absolute',
+          position: "absolute",
           inset: 0,
-          justifyContent: 'flex-end',
-          padding: 12,
+          justifyContent: size === "large" ? "center" : "flex-end",
+          alignItems: size === "large" ? "center" : "flex-start",
+          padding: 16,
         }}
       >
+        {/* Title */}
         <Text
-          style={{ color: '#fff', fontWeight: '700', fontSize: size === 'large' ? 16 : 13 }}
+          style={{
+            color: "#fff",
+            fontWeight: "700",
+            fontSize: size === "large" ? 22 : 13,
+            textAlign: size === "large" ? "center" : "left",
+          }}
           numberOfLines={1}
         >
           {item.title}
         </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3 }}>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>
-            {item.wallpaperCount} wallpapers
-          </Text>
-          {!item.isPremium ? (
-            <View
-              style={{
-                backgroundColor: 'rgba(42,191,191,0.25)',
-                paddingHorizontal: 6,
-                paddingVertical: 2,
-                borderRadius: 999,
-              }}
-            >
-              <Text style={{ color: '#2ABFBF', fontSize: 10, fontWeight: '600' }}>Free</Text>
-            </View>
-          ) : (
-            <View
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.4)',
-                paddingHorizontal: 6,
-                paddingVertical: 2,
-                borderRadius: 999,
-              }}
-            >
-              <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>
-                ${item.price}
-              </Text>
-            </View>
-          )}
-        </View>
+
+        {/* ONLY for small cards */}
+        {size === "small" && (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 6,
+              marginTop: 3,
+            }}
+          >
+            <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>
+              {item.wallpaperCount} wallpapers
+            </Text>
+
+            {!item.isPremium ? (
+              <View
+                style={{
+                  backgroundColor: "rgba(42,191,191,0.25)",
+                  paddingHorizontal: 6,
+                  paddingVertical: 2,
+                  borderRadius: 999,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#2ABFBF",
+                    fontSize: 10,
+                    fontWeight: "600",
+                  }}
+                >
+                  Free
+                </Text>
+              </View>
+            ) : (
+              <View
+                style={{
+                  backgroundColor: "rgba(0,0,0,0.4)",
+                  paddingHorizontal: 6,
+                  paddingVertical: 2,
+                  borderRadius: 999,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "rgba(255,255,255,0.7)",
+                    fontSize: 10,
+                  }}
+                >
+                  ${item.price}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
       </LinearGradient>
 
-      {/* Premium badge top-right */}
+      {/* Premium badge */}
       {item.isPremium && (
         <View
           style={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            backgroundColor: 'rgba(0,0,0,0.6)',
-            paddingHorizontal: 7,
-            paddingVertical: 3,
+            position: "absolute",
+            top: 10,
+            right: 10,
+            backgroundColor: "rgba(0,0,0,0.7)",
+            paddingHorizontal: 10,
+            paddingVertical: 4,
             borderRadius: 999,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 3,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
           }}
         >
-          <Ionicons name="star" size={9} color="#FFB800" />
-          <Text style={{ color: '#FFB800', fontSize: 10, fontWeight: '700' }}>Premium</Text>
+          <Ionicons name="star" size={12} color="#FFB800" />
+          <Text
+            style={{
+              color: "#FFB800",
+              fontSize: 11,
+              fontWeight: "700",
+            }}
+          >
+            Premium
+          </Text>
         </View>
       )}
     </TouchableOpacity>
