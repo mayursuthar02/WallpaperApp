@@ -90,8 +90,9 @@ export default function WallpaperDetail() {
   const downloadWallpaper = async () => {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
+
       if (status !== "granted") {
-        Alert.alert("Permission required");
+        Alert.alert("Permission required", "Allow access to save wallpaper");
         return;
       }
 
@@ -313,7 +314,7 @@ export default function WallpaperDetail() {
                       style={{
                         color: "#fff",
                         fontWeight: "600",
-                        fontSize: "14px",
+                        fontSize: 14,
                       }}
                     >
                       Artifex
@@ -431,8 +432,7 @@ export default function WallpaperDetail() {
                     solid={isFav}
                   />
                   <Text
-                    style={{ color: "#fff", fontWeight: "600" }}
-                    className="text-[15px]"
+                    style={{ color: "#fff", fontWeight: "600", fontSize: 15 }}
                   >
                     {isFav ? "Saved to Favorites" : "Save to Favorites"}
                   </Text>

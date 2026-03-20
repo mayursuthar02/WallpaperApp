@@ -27,7 +27,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.artifex.wallpaper",
-      "permissions": ["READ_MEDIA_IMAGES"]
+      "permissions": ["READ_MEDIA_IMAGES", "WRITE_EXTERNAL_STORAGE"]
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +37,16 @@
     "plugins": [
       "expo-router",
       "expo-font",
+
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow access to save wallpapers",
+          "savePhotosPermission": "Allow saving wallpapers",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+
       [
         "expo-splash-screen",
         {
