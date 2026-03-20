@@ -1,6 +1,13 @@
-import { FontAwesome } from "@expo/vector-icons"; // 👈 use this for toggle
+import { FontAwesome, FontAwesome6 } from "@expo/vector-icons"; // 👈 use this for toggle
 import { useRef } from "react";
-import { Animated, Dimensions, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  Dimensions,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Wallpaper } from "../constants/Data";
 
 const { width } = Dimensions.get("window");
@@ -41,7 +48,7 @@ export default function WallpaperCard({ item, isFav, onFav, onPress }: Props) {
     >
       <TouchableOpacity
         onPress={onPress}
-        onPressIn={handlePressIn}   // 👈 ADD HERE
+        onPressIn={handlePressIn} // 👈 ADD HERE
         onPressOut={handlePressOut} // 👈 ADD HERE
         activeOpacity={1} // 👈 important (disable default fade)
         style={{
@@ -74,7 +81,7 @@ export default function WallpaperCard({ item, isFav, onFav, onPress }: Props) {
               alignItems: "center",
             }}
           >
-            <FontAwesome name="star" size={14} color="#FFA600" />
+            <FontAwesome6 name="lock" size={12} color="#FFA600" />
             <Text
               style={{
                 color: "#FFB800",
@@ -83,7 +90,7 @@ export default function WallpaperCard({ item, isFav, onFav, onPress }: Props) {
                 marginLeft: 4,
               }}
             >
-              Premium
+              Lock
             </Text>
           </View>
         )}

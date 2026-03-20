@@ -14,8 +14,8 @@ export default function CustomTabBar({ state, navigation }) {
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
-        // paddingTop: 10,
-        paddingBottom: insets.bottom + 8, // 👈 IMPORTANT
+        paddingTop: 20,
+        paddingBottom: insets.bottom + 15, // 👈 IMPORTANT
       }}
     >
       {state.routes.map((route, index) => {

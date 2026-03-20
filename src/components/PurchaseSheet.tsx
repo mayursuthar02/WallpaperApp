@@ -1,16 +1,18 @@
-import React from 'react';
+import { FontAwesome6 } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
+  Alert,
+  Animated,
+  Easing,
   Modal,
   Pressable,
-  Alert,
-} from 'react-native';
-import { BlurView } from 'expo-blur';
-import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Collection } from '../constants/Data';
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Collection } from "../constants/Data";
 
 type Props = {
   visible: boolean;
@@ -20,10 +22,10 @@ type Props = {
 };
 
 const FEATURES = [
-  'Full 8K resolution downloads',
-  'Personal use license included',
-  'All wallpapers in this pack',
-  'Lifetime access — buy once',
+  "Full 8K resolution downloads",
+  "Personal use license included",
+  "All wallpapers in this pack",
+  "Lifetime access — buy once",
 ];
 
 export default function PurchaseSheet({
@@ -34,41 +36,92 @@ export default function PurchaseSheet({
 }: Props) {
   const insets = useSafeAreaInsets();
 
-  if (!collection) return null;
+  const [showModal, setShowModal] = useState(visible);
+
+  const translateY = useRef(new Animated.Value(300)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  // 🔥 HANDLE OPEN / CLOSE
+  useEffect(() => {
+    if (visible) {
+      setShowModal(true);
+
+      Animated.parallel([
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: 300,
+          easing: Easing.out(Easing.exp),
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(translateY, {
+          toValue: 300,
+          duration: 250,
+          easing: Easing.in(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShowModal(false); // 👈 unmount AFTER animation
+      });
+    }
+  }, [visible]);
+
+  if (!showModal || !collection) return null;
 
   const handleBuy = () => {
-    // 👉 Wire your real payment SDK here (e.g. RevenueCat, Stripe, etc.)
     Alert.alert(
-      'Confirm Purchase',
+      "Confirm Purchase",
       `Buy "${collection.title}" for $${collection.price}?`,
       [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: `Buy $${collection.price}`,
-          onPress: onSuccess,
-        },
-      ]
+        { text: "Cancel", style: "cancel" },
+        { text: `Buy $${collection.price}`, onPress: onSuccess },
+      ],
     );
   };
 
+  const handleClose = () => {
+    onClose(); // parent will set visible=false → animation runs
+  };
+
   return (
-    <Modal visible={visible} transparent animationType="slide" statusBarTranslucent>
-      <Pressable
-        onPress={onClose}
+    <Modal transparent statusBarTranslucent>
+      {/* 🔥 BACKDROP */}
+      <Animated.View
         style={{
           flex: 1,
-          backgroundColor: 'rgba(0,0,0,0.55)',
-          justifyContent: 'flex-end',
+          backgroundColor: "rgba(0,0,0,0.5)",
+          opacity,
+          justifyContent: "flex-end",
         }}
       >
-        <Pressable onPress={() => {}}>
+        {/* CLICK OUTSIDE */}
+        <Pressable style={{ flex: 1 }} onPress={handleClose} />
+
+        {/* 🔥 SHEET */}
+        <Animated.View
+          style={{
+            transform: [{ translateY }],
+          }}
+        >
           <BlurView
             intensity={65}
             tint="dark"
             style={{
               borderTopLeftRadius: 28,
               borderTopRightRadius: 28,
-              overflow: 'hidden',
+              overflow: "hidden",
             }}
           >
             <View
@@ -76,49 +129,59 @@ export default function PurchaseSheet({
                 paddingHorizontal: 22,
                 paddingTop: 20,
                 paddingBottom: insets.bottom + 24,
+                backgroundColor: "#111",
               }}
             >
-              {/* Handle */}
+              {/* HANDLE */}
               <View
                 style={{
                   width: 40,
                   height: 4,
                   borderRadius: 2,
-                  backgroundColor: 'rgba(255,255,255,0.2)',
-                  alignSelf: 'center',
+                  backgroundColor: "#fff",
+                  alignSelf: "center",
                   marginBottom: 24,
                 }}
               />
 
-              {/* Icon + title */}
-              <View style={{ alignItems: 'center', marginBottom: 22 }}>
+              {/* ICON + TITLE */}
+              <View style={{ alignItems: "center", marginBottom: 22 }}>
                 <View
                   style={{
                     width: 64,
                     height: 64,
                     borderRadius: 18,
-                    backgroundColor: 'rgba(42,191,191,0.15)',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    backgroundColor: "#133240",
+                    alignItems: "center",
+                    justifyContent: "center",
                     marginBottom: 14,
                   }}
                 >
-                  <Ionicons name="layers-outline" size={30} color="#2ABFBF" />
+                  <FontAwesome6 name="layer-group" size={28} color="#019CDF" />
                 </View>
-                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 20, marginBottom: 6 }}>
+
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontWeight: "700",
+                    fontSize: 20,
+                    marginBottom: 6,
+                  }}
+                >
                   {collection.title}
                 </Text>
-                <Text style={{ color: '#888', fontSize: 13, textAlign: 'center' }}>
+
+                <Text style={{ color: "#888", fontSize: 13 }}>
                   {collection.wallpaperCount} premium 8K wallpapers
                 </Text>
               </View>
 
-              {/* Features list */}
+              {/* FEATURES */}
               <View
                 style={{
-                  backgroundColor: 'rgba(28,28,30,0.6)',
-                  borderRadius: 16,
-                  padding: 16,
+                  backgroundColor: "#222",
+                  borderRadius: 25,
+                  padding: 20,
                   marginBottom: 20,
                   gap: 12,
                 }}
@@ -126,60 +189,73 @@ export default function PurchaseSheet({
                 {FEATURES.map((feat) => (
                   <View
                     key={feat}
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 12,
+                    }}
                   >
                     <View
                       style={{
                         width: 24,
                         height: 24,
                         borderRadius: 12,
-                        backgroundColor: 'rgba(42,191,191,0.18)',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        backgroundColor: "#133240",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      <Ionicons name="checkmark" size={13} color="#2ABFBF" />
+                      <FontAwesome6 name="check" size={12} color="#019CDF" />
                     </View>
-                    <Text style={{ color: '#fff', fontSize: 14 }}>{feat}</Text>
+
+                    <Text style={{ color: "#fff", fontSize: 14 }}>{feat}</Text>
                   </View>
                 ))}
               </View>
 
-              {/* Buy button */}
+              {/* BUY BUTTON */}
               <TouchableOpacity
                 onPress={handleBuy}
                 style={{
                   height: 56,
                   borderRadius: 999,
-                  backgroundColor: '#2ABFBF',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexDirection: 'row',
+                  backgroundColor: "#019CDF",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "row",
                   gap: 8,
                   marginBottom: 10,
                 }}
               >
-                <Ionicons name="bag-outline" size={20} color="#fff" />
-                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>
-                  Buy Pack  ${collection.price}
+                <FontAwesome6 name="bag-shopping" size={18} color="#fff" />
+                <Text
+                  style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}
+                >
+                  Buy Pack ${collection.price}
                 </Text>
               </TouchableOpacity>
 
-              {/* Cancel */}
+              {/* CANCEL */}
               <TouchableOpacity
-                onPress={onClose}
+                onPress={handleClose}
                 style={{
-                  height: 46,
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  height: 56,
+                  borderRadius: 999,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#222",
                 }}
               >
-                <Text style={{ color: '#888', fontSize: 14 }}>Cancel</Text>
+                <Text
+                  style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}
+                >
+                  Cancel
+                </Text>
               </TouchableOpacity>
             </View>
           </BlurView>
-        </Pressable>
-      </Pressable>
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
 }

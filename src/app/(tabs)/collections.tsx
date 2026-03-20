@@ -11,10 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CollectionCard from "../../components/CollectionCard";
 import { BANNER_IMAGES, COLLECTIONS } from "../../constants/Data";
 
@@ -38,7 +35,7 @@ export default function CollectionsScreen() {
   const COLLECTION_SPACING = 20;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
+    <View style={{ flex: 1, backgroundColor: "#111", paddingTop: insets.top}}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 50 }}
@@ -233,7 +230,7 @@ export default function CollectionsScreen() {
           )}
         />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

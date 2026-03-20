@@ -1,8 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome6 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -62,36 +62,52 @@ export default function CollectionDetail() {
   return (
     <View className="flex-1 bg-bg" style={{ paddingTop: insets.top }}>
       {/* ── Header ── */}
-      <View className="flex-row items-center justify-between px-5 py-3">
+      <View
+        style={{
+          height: 60, // 👈 fixed height for perfect center
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: 20,
+        }}
+      >
+        {/* Back Button */}
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: "#1C1C1E",
+            position: "absolute",
+            left: 20,
+            width: 42,
+            height: 42,
+            borderRadius: 999,
+            backgroundColor: "#222",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Ionicons name="chevron-back" size={22} color="#fff" />
+          <FontAwesome6 name="chevron-left" size={18} color="#fff" />
         </TouchableOpacity>
 
-        <Text style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}>
+        {/* Title */}
+        <Text
+          style={{
+            color: "#fff",
+            fontSize: 20,
+            fontWeight: "700",
+            textAlign: "center",
+          }}
+        >
           {collection.title}
         </Text>
-
-        <View style={{ width: 40 }} />
       </View>
 
       {/* ── Cover Banner ── */}
       <View
         style={{
-          marginHorizontal: 20,
-          borderRadius: 16,
-          overflow: "hidden",
-          height: 180,
-          marginBottom: 16,
+          // marginHorizontal: 20,
+          // borderRadius: 16,Í
+          overflow: "hidden",  
+          height: 235,
+          marginBottom: 20,
         }}
       >
         <Image
@@ -108,7 +124,7 @@ export default function CollectionDetail() {
             justifyContent: "center",
           }}
         >
-          <Text style={{ color: "#fff", fontWeight: "700", fontSize: 20 }}>
+          <Text style={{ color: "#fff", fontWeight: "700", fontSize: 25 }}>
             {collection.title}
           </Text>
         </LinearGradient>
@@ -120,24 +136,43 @@ export default function CollectionDetail() {
         numColumns={2}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingBottom: purchased ? 110 : 220,
-          gap: 12,
+          paddingHorizontal: 20,
+          paddingBottom: purchased ? 110 : 180, // adjust for purchase bar
         }}
-        columnWrapperStyle={{ gap: 12 }}
+        columnWrapperStyle={{
+          justifyContent: "space-between", // 🔥 PERFECT ALIGNMENT
+          marginBottom: 18, // 🔥 CLEAN VERTICAL GAP
+        }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <WallpaperCard
             item={item}
             isFav={favorites.includes(item.id)}
             onFav={() => toggleFav(item.id)}
-            onPress={() => router.push(`/wallpaper/${item.id}` as any)}
+            onPress={() => {
+              if (!item.isFree && !purchased) {
+                // Alert.alert(
+                //   "Premium Collection 🔒",
+                //   "To view this wallpaper, please purchase the collection.",
+                //   [
+                //     { text: "Cancel", style: "cancel" },
+                //     {
+                //       text: "Buy Now",
+                //       onPress: () => setShowPurchase(true), // 👈 open your purchase sheet
+                //     },
+                //   ],
+                // );
+                setShowPurchase(true);
+              } else {
+                router.push(`/wallpaper/${item.id}` as any);
+              }
+            }}
           />
         )}
       />
 
       {/* ── Purchase Bar (shown when not purchased) ── */}
-      {!purchased && (
+      {/* {!purchased && (
         <View
           style={{
             position: "absolute",
@@ -156,9 +191,9 @@ export default function CollectionDetail() {
           <TouchableOpacity
             onPress={() => setShowPurchase(true)}
             style={{
-              height: 56,
+              height: 55,
               borderRadius: 999,
-              backgroundColor: "#2ABFBF",
+              backgroundColor: "#019CDF",
               alignItems: "center",
               justifyContent: "center",
               flexDirection: "row",
@@ -166,26 +201,12 @@ export default function CollectionDetail() {
             }}
           >
             <Ionicons name="layers-outline" size={18} color="#fff" />
-            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
+            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}>
               Buy Collection ${collection.price}
             </Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              height: 56,
-              borderRadius: 999,
-              backgroundColor: "#fff",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ color: "#111", fontWeight: "700", fontSize: 15 }}>
-              Unlock All – Go Premium
-            </Text>
-          </TouchableOpacity>
         </View>
-      )}
+      )} */}
 
       <PurchaseSheet
         visible={showPurchase}

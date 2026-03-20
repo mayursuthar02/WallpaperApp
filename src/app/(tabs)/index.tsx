@@ -1,7 +1,7 @@
 import { FontAwesome6 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   FlatList,
   Text,
@@ -9,10 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import WallpaperCard from "../../components/WallpaperCard";
 import { WALLPAPERS } from "../../constants/Data";
 
@@ -25,6 +22,17 @@ export default function WallpapersScreen() {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [purchasedCollections, setPurchasedCollections] = useState<string[]>(
+    [],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      AsyncStorage.getItem("purchased").then((v) => {
+        if (v) setPurchasedCollections(JSON.parse(v));
+      });
+    }, []),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -57,7 +65,7 @@ export default function WallpapersScreen() {
   const FILTERS: Filter[] = ["All", "Free", "Premium"];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
+    <View style={{ flex: 1, backgroundColor: "#111", paddingTop: insets.top}}>
       {/* 🔥 HEADER */}
       <View style={{ paddingHorizontal: 20, marginBottom: 25, marginTop: 5 }}>
         {showSearch ? (
@@ -191,10 +199,19 @@ export default function WallpapersScreen() {
             item={item}
             isFav={favorites.includes(item.id)}
             onFav={() => toggleFav(item.id)}
-            onPress={() => router.push(`/wallpaper/${item.id}` as any)}
+            onPress={() => {
+              if (
+                !item.isFree &&
+                !purchasedCollections.includes(item.collectionId)
+              ) {
+                router.push(`/collection/${item.collectionId}` as any);
+              } else {
+                router.push(`/wallpaper/${item.id}` as any);
+              }
+            }}
           />
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 }
