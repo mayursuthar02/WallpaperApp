@@ -172,13 +172,13 @@ export default function FavoritesScreen() {
         <View className="flex-1 items-center justify-center">
           <Text
             style={{
-              color: "#888",
-              fontSize: 15,
+              color: "#555",
+              fontSize: 20,
               textAlign: "center",
               lineHeight: 24,
             }}
           >
-            No favorites yet 💔{"\n"}Start adding wallpapers
+            Looks empty! Add some{"\n"}wallpapers you love
           </Text>
         </View>
       ) : (
