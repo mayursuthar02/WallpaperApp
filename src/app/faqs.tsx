@@ -1,136 +1,198 @@
-import React, { useState } from 'react';
+import { FontAwesome6 } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useRef, useState } from "react";
 import {
-  View,
-  Text,
+  Animated,
+  LayoutAnimation,
+  Platform,
   ScrollView,
+  Text,
   TouchableOpacity,
-} from 'react-native';
-import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+  UIManager,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const FAQS = [
   {
-    id: '1',
-    q: 'How do I download wallpapers?',
-    a: 'Tap any wallpaper and press Download or Set Wallpaper.',
+    id: "1",
+    q: "How do I download wallpapers?",
+    a: "Tap any wallpaper and press Download or Set Wallpaper.",
   },
   {
-    id: '2',
-    q: 'Why is my download limit restricted?',
-    a: 'Free users have a limited number of downloads per month. Upgrade to Premium for unlimited downloads.',
+    id: "2",
+    q: "Why is my download limit restricted?",
+    a: "Free users have limited downloads. Upgrade to Premium.",
   },
   {
-    id: '3',
-    q: 'Can I use the wallpapers after my subscription ends?',
-    a: 'Wallpapers you downloaded during your subscription remain on your device. However, you will lose access to premium wallpapers in the app until you renew.',
+    id: "3",
+    q: "Can I use wallpapers after subscription ends?",
+    a: "Downloaded wallpapers remain on your device.",
   },
   {
-    id: '4',
-    q: 'How often do you add new wallpapers?',
-    a: 'We add new collections and wallpapers regularly. Follow us on social media to stay updated with the latest drops.',
-  },
-  {
-    id: '5',
-    q: 'Can I use wallpapers commercially?',
-    a: 'No. All wallpapers are for personal use only. No commercial use is allowed. Credits are required when sharing in setup photos.',
-  },
-  {
-    id: '6',
-    q: 'How do I cancel my subscription?',
-    a: 'You can cancel anytime through your device\'s subscription settings (App Store or Play Store). Your access continues until the end of the billing period.',
+    id: "4",
+    q: "How often do you add wallpapers?",
+    a: "We add new wallpapers regularly.",
   },
 ];
+
+// Enable animation on Android
+if (Platform.OS === "android") {
+  UIManager.setLayoutAnimationEnabledExperimental?.(true);
+}
 
 export default function FAQsScreen() {
   const insets = useSafeAreaInsets();
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const toggle = (id: string) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded((prev) => (prev === id ? null : id));
   };
 
   return (
-    <View className="flex-1 bg-bg" style={{ paddingTop: insets.top }}>
-
-      {/* ── Header ── */}
-      <View className="flex-row items-center gap-3 px-5 py-3">
+    <View style={{ flex: 1, backgroundColor: "#111", paddingTop: insets.top }}>
+      {/* Header */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          marginTop: 15,
+          marginBottom: 45,
+        }}
+      >
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: '#1C1C1E',
-            alignItems: 'center',
-            justifyContent: 'center',
+            position: "absolute",
+            left: 20,
+            width: 42,
+            height: 42,
+            borderRadius: 999,
+            backgroundColor: "#222",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Ionicons name="chevron-back" size={22} color="#fff" />
+          <FontAwesome6 name="chevron-left" size={18} color="#fff" />
         </TouchableOpacity>
-        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 17 }}>FAQs</Text>
+
+        <Text style={{ color: "#fff", fontSize: 20, fontWeight: "700" }}>
+          FAQs
+        </Text>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: 20,
-          paddingTop: 8,
           paddingBottom: 60,
-          gap: 10,
+          gap: 14,
         }}
       >
-        {FAQS.map((faq, index) => {
-          const isOpen = expanded === faq.id;
-          return (
-            <TouchableOpacity
-              key={faq.id}
-              onPress={() => toggle(faq.id)}
-              activeOpacity={0.85}
-              style={{
-                backgroundColor: '#1C1C1E',
-                borderRadius: 16,
-                padding: 16,
-                borderWidth: 1,
-                borderColor: isOpen ? '#2ABFBF' : 'transparent',
-              }}
-            >
-              <View className="flex-row items-center justify-between">
-                <Text
-                  style={{
-                    color: '#fff',
-                    fontSize: 14,
-                    fontWeight: '600',
-                    flex: 1,
-                    paddingRight: 8,
-                    lineHeight: 20,
-                  }}
-                >
-                  {index + 1}. {faq.q}
-                </Text>
-                <Ionicons
-                  name={isOpen ? 'chevron-up' : 'chevron-down'}
-                  size={18}
-                  color={isOpen ? '#2ABFBF' : '#555'}
-                />
-              </View>
-
-              {isOpen && (
-                <Text
-                  style={{
-                    color: '#888',
-                    fontSize: 13,
-                    lineHeight: 21,
-                    marginTop: 10,
-                  }}
-                >
-                  {faq.a}
-                </Text>
-              )}
-            </TouchableOpacity>
-          );
-        })}
+        {FAQS.map((faq, index) => (
+          <FAQItem
+            key={faq.id}
+            faq={faq}
+            index={index}
+            isOpen={expanded === faq.id}
+            onPress={() => toggle(faq.id)}
+          />
+        ))}
       </ScrollView>
     </View>
+  );
+}
+
+function FAQItem({ faq, index, isOpen, onPress }: any) {
+  const animation = useRef(new Animated.Value(0)).current;
+
+  // Animate on open/close
+  if (isOpen) {
+    Animated.timing(animation, {
+      toValue: 1,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
+  } else {
+    Animated.timing(animation, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  }
+
+  const height = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 100], // adjust if text is bigger
+  });
+
+  const opacity = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.9}
+      style={{
+        backgroundColor: "#181818",
+        borderRadius: 20,
+        overflow: "hidden",
+      }}
+    >
+      {/* Question */}
+      <View
+        style={{
+          padding: 16,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text
+          style={{
+            color: "#fff",
+            fontSize: 15,
+            flex: 1,
+            lineHeight: 22,
+          }}
+        >
+          {index + 1}. {faq.q}
+        </Text>
+      </View>
+
+      {/* Divider */}
+      {isOpen && (
+        <View
+          style={{
+            height: 0.5,
+            backgroundColor: "rgba(255,255,255,0.08)",
+            marginHorizontal: 16,
+          }}
+        />
+      )}
+
+      {/* Animated Answer */}
+      <Animated.View
+        style={{
+          height,
+          opacity,
+          overflow: "hidden",
+        }}
+      >
+        <Text
+          style={{
+            color: "#aaa",
+            fontSize: 14,
+            lineHeight: 22,
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+          }}
+        >
+          {faq.a}
+        </Text>
+      </Animated.View>
+    </TouchableOpacity>
   );
 }

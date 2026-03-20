@@ -1,30 +1,31 @@
-import React, { useState } from 'react';
+import { FontAwesome6, Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import React, { useState } from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Switch,
   Alert,
-} from 'react-native';
-import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+  ScrollView,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AccountScreen() {
   const insets = useSafeAreaInsets();
   const [notif, setNotif] = useState(true);
 
   const logout = () => {
-    Alert.alert('Log Out', 'Are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert("Log Out", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
       {
-        text: 'Log Out',
-        style: 'destructive',
+        text: "Log Out",
+        style: "destructive",
         onPress: async () => {
-          await AsyncStorage.removeItem('onboarded');
-          router.replace('/onboarding' as any);
+          await AsyncStorage.removeItem("onboarded");
+          router.replace("/onboarding" as any);
         },
       },
     ]);
@@ -38,23 +39,82 @@ export default function AccountScreen() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── Profile Card ── */}
-      <View className="items-center pt-8 pb-6 px-5">
+      <View
+        style={{
+          marginHorizontal: 20,
+          marginTop: 16,
+          marginBottom: 10,
+          padding: 20,
+          borderRadius: 16,
+          backgroundColor: "#181818",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 14,
+        }}
+      >
+        {/* Logo / Avatar */}
         <View
-          className="w-16 h-16 rounded-full bg-card items-center justify-center mb-3"
-          style={{ borderWidth: 2, borderColor: '#2ABFBF' }}
+          style={{
+            width: 70,
+            height: 70,
+            borderRadius: 50,
+            backgroundColor: "#111",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+          }}
         >
-          <Text style={{ color: '#fff', fontSize: 26, fontWeight: '800' }}>A</Text>
+          <Image
+            source={require("../../../assets/images/icon.jpeg")}
+            style={{ width: 70, height: 70 }}
+            contentFit="cover"
+          />
         </View>
-        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 18 }}>
-          Artifex Wallpaper
-        </Text>
-        <View className="flex-row items-center gap-1.5 mt-1 mb-1">
-          <Ionicons name="star" size={12} color="#FFB800" />
-          <Text style={{ color: '#FFB800', fontSize: 12, fontWeight: '600' }}>
-            Premium User
+
+        {/* Text Content */}
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              color: "#fff",
+              fontWeight: "600",
+              fontSize: 23,
+            }}
+          >
+            Artifex Wallpaper
+          </Text>
+
+          {/* Premium Row */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 6,
+              marginTop: 4,
+            }}
+          >
+            <FontAwesome6 name="bookmark" size={12} color="#FFA600" solid />
+            <Text
+              style={{
+                color: "#FFA600",
+                fontSize: 15,
+                fontWeight: "600",
+              }}
+            >
+              Premium User
+            </Text>
+          </View>
+
+          {/* Expiry */}
+          <Text
+            style={{
+              color: "#444444",
+              fontSize: 12,
+              marginTop: 5,
+            }}
+          >
+            Expire Date: 30-10-2025
           </Text>
         </View>
-        <Text style={{ color: '#888', fontSize: 12 }}>user@example.com</Text>
       </View>
 
       {/* ── Menu ── */}
@@ -62,27 +122,39 @@ export default function AccountScreen() {
         <MenuItem
           icon="layers-outline"
           label="My Collection"
-          onPress={() => router.push('/my-collections' as any)}
+          onPress={() => router.push("/my-collections" as any)}
         />
-        <MenuItem
+        {/* <MenuItem
           icon="card-outline"
           label="Manage Subscription"
-          onPress={() => router.push('/subscription' as any)}
+          onPress={() => router.push("/subscription" as any)}
           isLast
-        />
+        /> */}
       </MenuGroup>
 
       <SectionLabel label="Settings" />
       <MenuGroup>
-        <View className="flex-row items-center justify-between px-5 py-4">
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingVertical: 14,
+            borderBottomWidth: 0.5,
+            borderBottomColor: "#2A2A2A",
+            // marginHorizontal: 20,
+          }}
+        >
           <View className="flex-row items-center gap-3">
             <Ionicons name="notifications-outline" size={20} color="#888" />
-            <Text style={{ color: '#fff', fontSize: 14 }}>Notification Alerts</Text>
+            <Text style={{ color: "#fff", fontSize: 14 }}>
+              Notification Alerts
+            </Text>
           </View>
           <Switch
             value={notif}
             onValueChange={setNotif}
-            trackColor={{ true: '#2ABFBF', false: '#333' }}
+            trackColor={{ true: "#019CDF", false: "#333" }}
             thumbColor="#ffffff"
           />
         </View>
@@ -93,12 +165,12 @@ export default function AccountScreen() {
         <MenuItem
           icon="help-circle-outline"
           label="FAQs"
-          onPress={() => router.push('/faqs' as any)}
+          onPress={() => router.push("/faqs" as any)}
         />
         <MenuItem
           icon="alert-circle-outline"
           label="Report a Problem"
-          onPress={() => Alert.alert('Report', 'Feature coming soon.')}
+          onPress={() => Alert.alert("Report", "Feature coming soon.")}
           isLast
         />
       </MenuGroup>
@@ -108,28 +180,28 @@ export default function AccountScreen() {
         <MenuItem
           icon="information-circle-outline"
           label="About Artifex Wallpaper"
-          onPress={() => router.push('/about' as any)}
+          onPress={() => router.push("/about" as any)}
         />
         <MenuItem
           icon="shield-checkmark-outline"
           label="Privacy Policy"
-          onPress={() => Alert.alert('Privacy Policy', 'Feature coming soon.')}
+          onPress={() => Alert.alert("Privacy Policy", "Feature coming soon.")}
         />
         <MenuItem
           icon="document-text-outline"
           label="Terms of Service"
-          onPress={() => Alert.alert('Terms', 'Feature coming soon.')}
+          onPress={() => Alert.alert("Terms", "Feature coming soon.")}
           isLast
         />
       </MenuGroup>
 
       <SectionLabel label="Version" />
       <View className="px-5 py-2">
-        <Text style={{ color: '#888', fontSize: 13 }}>Version 1.0.2</Text>
+        <Text style={{ color: "#888", fontSize: 13 }}>Version 1.0.2</Text>
       </View>
 
       <TouchableOpacity onPress={logout} className="px-5 mt-6 pb-2">
-        <Text style={{ color: '#FF3B30', fontSize: 14, fontWeight: '600' }}>
+        <Text style={{ color: "#FF3B30", fontSize: 14, fontWeight: "600" }}>
           Log Out
         </Text>
       </TouchableOpacity>
@@ -141,14 +213,12 @@ function SectionLabel({ label }: { label: string }) {
   return (
     <Text
       style={{
-        color: '#2ABFBF',
-        fontSize: 11,
-        fontWeight: '700',
-        letterSpacing: 1,
-        textTransform: 'uppercase',
+        color: "#019CDF",
+        fontSize: 15,
+        fontWeight: "600",
         paddingHorizontal: 20,
-        paddingTop: 22,
-        paddingBottom: 8,
+        marginTop: 24,
+        marginBottom: 6,
       }}
     >
       {label}
@@ -157,14 +227,7 @@ function SectionLabel({ label }: { label: string }) {
 }
 
 function MenuGroup({ children }: { children: React.ReactNode }) {
-  return (
-    <View
-      className="mx-5 overflow-hidden"
-      style={{ backgroundColor: '#1C1C1E', borderRadius: 16 }}
-    >
-      {children}
-    </View>
-  );
+  return <View style={{ marginHorizontal: 20 }}>{children}</View>;
 }
 
 function MenuItem({
@@ -181,13 +244,20 @@ function MenuItem({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="flex-row items-center justify-between px-5 py-4"
-      style={!isLast ? { borderBottomWidth: 1, borderBottomColor: '#2A2A2A' } : {}}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingVertical: 14,
+        borderBottomWidth: isLast ? 0 : 0.5,
+        borderBottomColor: "#222",
+      }}
     >
-      <View className="flex-row items-center gap-3">
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
         <Ionicons name={icon} size={20} color="#888" />
-        <Text style={{ color: '#fff', fontSize: 14 }}>{label}</Text>
+        <Text style={{ color: "#fff", fontSize: 16 }}>{label}</Text>
       </View>
+
       <Ionicons name="chevron-forward" size={16} color="#444" />
     </TouchableOpacity>
   );
