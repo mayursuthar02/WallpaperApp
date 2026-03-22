@@ -33,7 +33,7 @@ const W5 = require("../../assets/onboarding/W5.jpg");
 const W6 = require("../../assets/onboarding/W6.jpg");
 const W7 = require("../../assets/onboarding/W7.jpg");
 const W8 = require("../../assets/onboarding/W8.jpg");
-const W9 = require("../../assets/onboarding/w1.jpeg");
+const W9 = require("../../assets/onboarding/W11.jpeg");
 
 // Banner images for collection page carousel
 const B1 = require("../../assets/onboarding/B1.jpg");
@@ -178,8 +178,8 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "c2",
-    title: "Collection 1",
-    coverImage: W1,
+    title: "Collection 2",
+    coverImage: W2,
     bannerImage: W2,
     isPremium: false,
     price: 3,
@@ -187,8 +187,8 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "c3",
-    title: "Collection 1",
-    coverImage: W1,
+    title: "Collection 3",
+    coverImage: W3,
     bannerImage: W2,
     isPremium: false,
     price: 3,
@@ -196,7 +196,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "c4",
-    title: "Collection 2",
+    title: "Collection 4",
     coverImage: W3,
     bannerImage: W4,
     isPremium: true,
@@ -205,7 +205,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "c5",
-    title: "Collection 3",
+    title: "Collection 5",
     coverImage: W5,
     bannerImage: W6,
     isPremium: true,

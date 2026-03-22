@@ -27,7 +27,8 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.artifex.wallpaper",
-      "permissions": ["READ_MEDIA_IMAGES", "WRITE_EXTERNAL_STORAGE"]
+      "permissions": ["READ_MEDIA_IMAGES", "WRITE_EXTERNAL_STORAGE"],
+      "icon": "./assets/images/icon.jpeg"
     },
     "web": {
       "bundler": "metro",
@@ -37,7 +38,6 @@
     "plugins": [
       "expo-router",
       "expo-font",
-
       [
         "expo-media-library",
         {

@@ -1,7 +1,9 @@
+import * as FileSystem from "expo-file-system/legacy";
+import * as IntentLauncher from "expo-intent-launcher";
+
 import { FontAwesome6 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
-import * as FileSystem from "expo-file-system/legacy";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
@@ -118,6 +120,41 @@ export default function WallpaperDetail() {
     }
   };
 
+  // Apply wallpaper Feature
+  const applyWallpaper = async () => {
+    try {
+      let uri = wallpaper.image;
+
+      if (typeof uri !== "string") {
+        const asset = RNImage.resolveAssetSource(uri);
+        uri = asset.uri;
+      }
+
+      // Save file
+      const fileUri = FileSystem.cacheDirectory + `wallpaper_${Date.now()}.jpg`;
+
+      const downloaded = await FileSystem.downloadAsync(uri, fileUri);
+
+      // 🔥 Convert to content URI (FIX)
+      const contentUri = await FileSystem.getContentUriAsync(downloaded.uri);
+
+      await IntentLauncher.startActivityAsync(
+        "android.intent.action.ATTACH_DATA",
+        {
+          data: contentUri, // ✅ IMPORTANT
+          type: "image/*",
+          flags: 3,
+          extra: {
+            "android.intent.extra.STREAM": contentUri,
+          },
+        },
+      );
+    } catch (e) {
+      console.log("APPLY ERROR:", e);
+      Alert.alert("Error", "Failed to open wallpaper chooser");
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#111" }}>
       {/* ── Full Screen Image ── */}
@@ -216,7 +253,7 @@ export default function WallpaperDetail() {
         {/* 🔥 ONLY ANDROID */}
         {Platform.OS === "android" && (
           <TouchableOpacity
-            onPress={() => setShowApply(true)}
+            onPress={() => applyWallpaper()}
             style={{
               flex: 1,
               height: 52,
