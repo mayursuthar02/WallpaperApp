@@ -1,19 +1,19 @@
 {
   "expo": {
-    "name": "wallpaperapp",
-    "slug": "wallpaperapp",
+    "name": "Wallbit",
+    "slug": "Wallbit",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.jpeg",
-    "scheme": "wallpaperapp",
+    "icon": "./assets/images/appIcon.png",
+    "scheme": "Wallbit",
     "userInterfaceStyle": "dark",
     "splash": {
       "backgroundColor": "#111111"
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.artifex.wallpaper",
-      "icon": "./assets/images/icon.jpeg",
+      "bundleIdentifier": "com.wallbit.wallpaper",
+      "icon": "./assets/images/appIcon.png",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "We need access to save wallpapers to your gallery"
       }
@@ -26,14 +26,14 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.artifex.wallpaper",
+      "package": "com.wallbit.wallpaper",
       "permissions": ["READ_MEDIA_IMAGES", "WRITE_EXTERNAL_STORAGE"],
-      "icon": "./assets/images/icon.jpeg"
+      "icon": "./assets/images/appIcon.png"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/appIcon.png"
     },
     "plugins": [
       "expo-router",
@@ -50,10 +50,10 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#111111",
           "android": {
-            "image": "./assets/images/splash-icon.png",
-            "imageWidth": 76
+            "image": "./assets/images/appIcon.png",
+            "imageWidth": 150
           }
         }
       ]

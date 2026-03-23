@@ -25,20 +25,21 @@ export type Collection = {
 // Replace these with your real local image files inside assets/wallpapers/
 // Naming: w1.jpg, w2.jpg ... w8.jpg
 // ─────────────────────────────────────────────────────────────────────────────
-const W1 = require("../../assets/onboarding/W1.jpg");
-const W2 = require("../../assets/onboarding/W2.jpg");
-const W3 = require("../../assets/onboarding/W3.jpg");
-const W4 = require("../../assets/onboarding/W4.jpg");
-const W5 = require("../../assets/onboarding/W5.jpg");
-const W6 = require("../../assets/onboarding/W6.jpg");
-const W7 = require("../../assets/onboarding/W7.jpg");
-const W8 = require("../../assets/onboarding/W8.jpg");
-const W9 = require("../../assets/onboarding/W11.jpeg");
+const W1 = require("../../assets/wallpapers/W1.png");
+const W2 = require("../../assets/wallpapers/W2.png");
+const W3 = require("../../assets/wallpapers/W3.png");
+const W4 = require("../../assets/wallpapers/W4.png");
+const W5 = require("../../assets/wallpapers/W5.png");
+const W6 = require("../../assets/wallpapers/W6.png");
+const W7 = require("../../assets/wallpapers/W7.png");
+const W8 = require("../../assets/wallpapers/W8.png");
+const W9 = require("../../assets/wallpapers/W9.png");
+const W10 = require("../../assets/wallpapers/W10.png");
 
 // Banner images for collection page carousel
-const B1 = require("../../assets/onboarding/B1.jpg");
-const B2 = require("../../assets/onboarding/B2.jpg");
-const B3 = require("../../assets/onboarding/B3.jpg");
+const B1 = require("../../assets/onboarding/B1.png");
+const B2 = require("../../assets/onboarding/B2.png");
+const B3 = require("../../assets/onboarding/B3.png");
 
 export const BANNER_IMAGES = [
   { id: "b1", image: B1, label: "Banner 1" },
@@ -155,6 +156,19 @@ export const WALLPAPERS: Wallpaper[] = [
     id: "9",
     title: "Desert Dusk",
     image: W9,
+    collectionId: "c2",
+    collectionName: "Pixelated Patterns",
+    isFree: false,
+    dimensions: "7680 x 7680 px",
+    license:
+      "Personal use only, no commercial use allowed, for setups credits are required",
+    views: "8.3K",
+    likes: "47K",
+  },
+  {
+    id: "10",
+    title: "Desert Dusk",
+    image: W10,
     collectionId: "c2",
     collectionName: "Pixelated Patterns",
     isFree: false,

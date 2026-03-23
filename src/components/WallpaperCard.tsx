@@ -1,14 +1,16 @@
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons"; // 👈 use this for toggle
+import { Image } from "expo-image";
 import { useRef } from "react";
 import {
   Animated,
   Dimensions,
-  Image,
+  // Image,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { Wallpaper } from "../constants/Data";
+import { getImageSource } from "../utils/image";
 
 const { width } = Dimensions.get("window");
 
@@ -61,9 +63,12 @@ export default function WallpaperCard({ item, isFav, onFav, onPress }: Props) {
       >
         {/* Image */}
         <Image
-          source={item.image}
+          source={getImageSource(item.image)}
           style={{ width: "100%", height: "100%" }}
-          resizeMode="cover"
+          contentFit="cover"
+          transition={200}
+          cachePolicy="memory-disk"
+          loading="lazy"
         />
 
         {/* Premium badge */}

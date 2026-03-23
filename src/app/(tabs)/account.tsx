@@ -65,7 +65,7 @@ export default function AccountScreen() {
             }}
           >
             <Image
-              source={require("../../../assets/images/icon.jpeg")}
+              source={require("../../../assets/images/appIcon.png")}
               style={{ width: 70, height: 70 }}
               contentFit="cover"
             />
@@ -80,7 +80,7 @@ export default function AccountScreen() {
                 fontSize: 23,
               }}
             >
-              Artifex Wallpaper
+              Wallbit
             </Text>
 
             {/* Premium Row */}
@@ -179,7 +179,7 @@ export default function AccountScreen() {
         <MenuGroup>
           <MenuItem
             icon="information-circle-outline"
-            label="About Artifex Wallpaper"
+            label="About Wallbit"
             onPress={() => router.push("/about" as any)}
           />
           <MenuItem

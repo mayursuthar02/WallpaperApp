@@ -74,14 +74,14 @@ export default function AboutScreen() {
           >
             {/* Replace with your logo if needed */}
             <Image
-              source={require("../../assets/images/icon.jpeg")}
+              source={require("../../assets/images/appIcon.png")}
               style={{ width: 70, height: 70 }}
               contentFit="cover"
             />
           </View>
 
           <Text style={{ color: "#fff", fontSize: 20, fontWeight: "700" }}>
-            Artifex Wallpaper
+            Wallbit
           </Text>
         </View>
 
@@ -94,7 +94,7 @@ export default function AboutScreen() {
             marginBottom: 20,
           }}
         >
-          Artifex Wallpaper brings you a curated collection of stunning 4K & 8K
+          Wallbit Wallpaper brings you a curated collection of stunning 4K & 8K
           digital artworks designed to elevate your home and lock screens. Our
           mission is to make personalization effortless with high-quality
           wallpapers, premium collections, and a smooth browsing experience.
@@ -115,7 +115,7 @@ export default function AboutScreen() {
         <View style={{ marginBottom: 1 }}>
           <View style={{ flexDirection: "row", marginBottom: 4 }}>
             <Text style={label}>Built by:</Text>
-            <Text style={value}> Artifex Wall</Text>
+            <Text style={value}> Wallbit</Text>
           </View>
 
           <Text style={desc}>
@@ -134,11 +134,11 @@ export default function AboutScreen() {
         </Text>
 
         <TouchableOpacity
-          onPress={() => Linking.openURL("mailto:support@artifexwallpaper.com")}
+          onPress={() => Linking.openURL("mailto:support@Wallbitwallpaper.com")}
           style={{ flexDirection: "row", alignItems: "center", marginTop: 6 }}
         >
           <Text style={{ color: "#019CDF", fontSize: 14 }}>
-            support@artifexwallpaper.com
+            support@Wallbitwallpaper.com
           </Text>
 
           <FontAwesome6
@@ -161,21 +161,19 @@ export default function AboutScreen() {
         </Text>
 
         <TouchableOpacity
-          onPress={() =>
-            Linking.openURL("https://instagram.com/artifexwallpaper")
-          }
+          onPress={() => Linking.openURL("https://instagram.com/Wallbit")}
           style={socialRow}
         >
           <FontAwesome6 name="instagram" size={14} color="#019CDF" />
-          <Text style={socialText}>@artifexwallpaper</Text>
+          <Text style={socialText}>@Wallbit</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => Linking.openURL("https://x.com/artifexwall")}
+          onPress={() => Linking.openURL("https://x.com/Wallbit")}
           style={socialRow}
         >
           <FontAwesome6 name="x-twitter" size={14} color="#019CDF" />
-          <Text style={socialText}>@artifexwall</Text>
+          <Text style={socialText}>@Wallbit</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

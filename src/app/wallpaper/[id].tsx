@@ -1,6 +1,7 @@
 import * as FileSystem from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
 
+import { getImageSource } from "@/src/utils/image";
 import { FontAwesome6 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
@@ -159,7 +160,7 @@ export default function WallpaperDetail() {
     <View style={{ flex: 1, backgroundColor: "#111" }}>
       {/* ── Full Screen Image ── */}
       <Animated.Image
-        source={wallpaper.image}
+        source={getImageSource(wallpaper.image)}
         style={{
           width,
           height,
@@ -338,7 +339,7 @@ export default function WallpaperDetail() {
                       }}
                     >
                       <Image
-                        source={require("../../../assets/images/icon.jpeg")}
+                        source={require("../../../assets/images/appIcon.png")}
                         style={{
                           width: "100%",
                           height: "100%",
@@ -354,7 +355,7 @@ export default function WallpaperDetail() {
                         fontSize: 14,
                       }}
                     >
-                      Artifex
+                      Wallbit
                     </Text>
 
                     <FontAwesome6

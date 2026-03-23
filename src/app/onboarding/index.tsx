@@ -1,7 +1,7 @@
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -16,7 +16,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import WallpaperLogo from "../../../assets/WallpaperLogo.jpeg";
+import WallpaperLogo from "../../../assets/images/appIcon.png";
 
 const { width, height } = Dimensions.get("window");
 
@@ -81,7 +81,7 @@ export default function Onboarding() {
           paddingBottom: insets.bottom + 12,
         }}
       >
-        <Text className="text-white font-bold text-3xl">Artifex Wallpaper</Text>
+        <Text className="text-white font-bold text-3xl">Wallbit</Text>
 
         {/* Logo */}
         <View className="items-center mt-[-100px]">
@@ -93,11 +93,11 @@ export default function Onboarding() {
             />
           </View>
           <Text className="text-white font-bold text-4xl mb-5 mt-10">
-            Join with Artifex
+            Join with Wallbit
           </Text>
           <Text className="text-[#444] text-2xl text-center leading-8 px-2">
             Step into the world of premium 8K art. Unlock exclusive wallpapers
-            crafted by Artifex.
+            crafted by Wallbit.
           </Text>
         </View>
 

@@ -65,7 +65,7 @@ export default function WallpapersScreen() {
   const FILTERS: Filter[] = ["All", "Free", "Premium"];
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#111", paddingTop: insets.top}}>
+    <View style={{ flex: 1, backgroundColor: "#111", paddingTop: insets.top }}>
       {/* 🔥 HEADER */}
       <View style={{ paddingHorizontal: 20, marginBottom: 25, marginTop: 5 }}>
         {showSearch ? (
@@ -120,15 +120,23 @@ export default function WallpapersScreen() {
               alignItems: "center",
             }}
           >
-            <Text
-              style={{
-                color: "#fff",
-                fontSize: 22,
-                fontWeight: "700",
-              }}
-            >
-              Artifex Wallpaper
-            </Text>
+            <View className="flex items-center">
+              {/* <View className="w-[30] h-[30]">
+                <Image
+                  source={require("../../../assets/images/logo.png")}
+                  contentFit="cover"
+                />
+              </View> */}
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: 22,
+                  fontWeight: "700",
+                }}
+              >
+                Wallbit
+              </Text>
+            </View>
 
             <TouchableOpacity
               onPress={() => setShowSearch(true)}
