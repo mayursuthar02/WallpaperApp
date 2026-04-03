@@ -1,5 +1,5 @@
+import { useAuthStore } from "@/src/store/authStore";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -16,20 +16,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function AccountScreen() {
   const insets = useSafeAreaInsets();
   const [notif, setNotif] = useState(true);
-
-  const logout = () => {
-    Alert.alert("Log Out", "Are you sure you want to log out?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Log Out",
-        style: "destructive",
-        onPress: async () => {
-          await AsyncStorage.removeItem("onboarded");
-          router.replace("/onboarding" as any);
-        },
-      },
-    ]);
-  };
+  const { signOut } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  // const signOut = useAuthStore((state) => state.signOut);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#111", paddingTop: insets.top }}>
@@ -65,7 +54,12 @@ export default function AccountScreen() {
             }}
           >
             <Image
-              source={require("../../../assets/images/appIcon.png")}
+              // source={require("../../../assets/images/appIcon.png")}
+              source={
+                user?.avatar_url
+                  ? { uri: user.avatar_url }
+                  : require("../../../assets/images/appIcon.png")
+              }
               style={{ width: 70, height: 70 }}
               contentFit="cover"
             />
@@ -80,7 +74,7 @@ export default function AccountScreen() {
                 fontSize: 23,
               }}
             >
-              Wallbit
+              {user?.full_name || "Guest"}
             </Text>
 
             {/* Premium Row */}
@@ -202,7 +196,7 @@ export default function AccountScreen() {
           <Text style={{ color: "#888", fontSize: 13 }}>Version 1.0.2</Text>
         </View>
 
-        <TouchableOpacity onPress={logout} className="px-5 mt-6 pb-2">
+        <TouchableOpacity onPress={signOut} className="px-5 mt-6 pb-2">
           <Text style={{ color: "#FF2D55", fontSize: 15, fontWeight: "600" }}>
             Log Out
           </Text>

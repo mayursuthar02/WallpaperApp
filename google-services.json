@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "245949372968",
+    "project_id": "wallpaper-app-dev-491808",
+    "storage_bucket": "wallpaper-app-dev-491808.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245949372968:android:36a995937b3afc78a6b31d",
+        "android_client_info": {
+          "package_name": "com.wallbit.wallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245949372968-e7i8rlp56197o2safjog81scc6g4bnmr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wallbit.wallpaper",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "245949372968-j87cva5f8fesbrer9v6hs3an8mlmmfke.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0Px0L-s33YV-4IfQJKWG4CEoh940zU8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245949372968-j87cva5f8fesbrer9v6hs3an8mlmmfke.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "245949372968-8tc9elmsi7drsakds8magtvan2b3siup.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wallbit.wallpaper"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

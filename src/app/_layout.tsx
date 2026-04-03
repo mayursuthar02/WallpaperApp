@@ -1,15 +1,53 @@
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../../global.css";
+import { supabase } from "../lib/supabase";
+import { useAuthStore } from "../store/authStore";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  // ✅ 1. Listen for auth state changes (handles token refresh, sign out, etc.)
   useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log("Auth event:", event);
+        console.log("Session:", session ? "EXISTS" : "NULL");
+        console.log("User:", session?.user?.email);
+
+        if (
+          (event === "SIGNED_IN" ||
+            event === "INITIAL_SESSION" ||
+            event === "TOKEN_REFRESHED") &&
+          session?.user &&
+          !useAuthStore.getState().isAuthenticated
+        ) {
+          console.log("✅ Should redirect to tabs now");
+
+          const user = session.user;
+
+          useAuthStore.setState({
+            user: {
+              id: user.id,
+              email: user.email!,
+              full_name: user.user_metadata?.full_name || "",
+              avatar_url: user.user_metadata?.avatar_url || "",
+            },
+            isAuthenticated: true,
+          });
+
+          console.log("Store updated, calling router.replace...");
+          router.replace("/(tabs)");
+        }
+      },
+    );
+
     SplashScreen.hideAsync();
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   return (
@@ -29,7 +67,7 @@ export default function RootLayout() {
           name="wallpaper/[id]"
           options={{
             presentation: "transparentModal",
-            animation: "fade_from_bottom", // 🔥 BEST
+            animation: "fade_from_bottom",
             animationDuration: 250,
           }}
         />

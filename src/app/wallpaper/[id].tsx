@@ -1,4 +1,5 @@
-import * as FileSystem from "expo-file-system/legacy";
+// import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 
 import { getImageSource } from "@/src/utils/image";
@@ -89,39 +90,81 @@ export default function WallpaperDetail() {
     setIsFav(!isFav);
   };
 
+  const getPermission = async () => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Required",
+        "Please allow storage permission to download wallpaper",
+      );
+      return false;
+    }
+
+    return true;
+  };
+
   // Download Wallpaper Feature
   const downloadWallpaper = async () => {
     try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-
-      if (status !== "granted") {
-        Alert.alert("Permission required", "Allow access to save wallpaper");
-        return;
-      }
+      const hasPermission = await getPermission();
+      if (!hasPermission) return;
 
       let uri = wallpaper.image;
 
-      // 🔥 FIX HERE
       if (typeof uri !== "string") {
         const asset = RNImage.resolveAssetSource(uri);
         uri = asset.uri;
       }
 
-      const fileUri = FileSystem.cacheDirectory + "wallpaper.jpg";
+      console.log("LOCAL URI:", uri);
 
-      const downloaded = await FileSystem.downloadAsync(uri, fileUri);
-
-      const asset = await MediaLibrary.createAssetAsync(downloaded.uri);
+      const asset = await MediaLibrary.createAssetAsync(uri);
       await MediaLibrary.createAlbumAsync("Wallpaper", asset, false);
 
       Alert.alert("Success ✅", "Wallpaper saved!");
-    } catch (e) {
-      console.log("DOWNLOAD ERROR:", e);
-      Alert.alert("Error", "Failed to save image");
+    } catch (e: any) {
+      console.log("ERROR:", e);
+      Alert.alert("Error", e?.message || "Failed");
     }
   };
 
-  // Apply wallpaper Feature
+  // Apply wallpaper Feature Dev
+  // const applyWallpaper = async () => {
+  //   try {
+  //     let uri = wallpaper.image;
+
+  //     if (typeof uri !== "string") {
+  //       const asset = RNImage.resolveAssetSource(uri);
+  //       uri = asset.uri;
+  //     }
+
+  //     // Save file
+  //     const fileUri = FileSystem.cacheDirectory + `wallpaper_${Date.now()}.jpg`;
+
+  //     const downloaded = await FileSystem.downloadAsync(uri, fileUri);
+
+  //     // 🔥 Convert to content URI (FIX)
+  //     const contentUri = await FileSystem.getContentUriAsync(downloaded.uri);
+
+  //     await IntentLauncher.startActivityAsync(
+  //       "android.intent.action.ATTACH_DATA",
+  //       {
+  //         data: contentUri, // ✅ IMPORTANT
+  //         type: "image/*",
+  //         flags: 3,
+  //         extra: {
+  //           "android.intent.extra.STREAM": contentUri,
+  //         },
+  //       },
+  //     );
+  //   } catch (e) {
+  //     console.log("APPLY ERROR:", e);
+  //     Alert.alert("Error", "Failed to open wallpaper chooser");
+  //   }
+  // };
+
+  // Apply Wallpaper for APK
   const applyWallpaper = async () => {
     try {
       let uri = wallpaper.image;
@@ -131,28 +174,19 @@ export default function WallpaperDetail() {
         uri = asset.uri;
       }
 
-      // Save file
-      const fileUri = FileSystem.cacheDirectory + `wallpaper_${Date.now()}.jpg`;
-
-      const downloaded = await FileSystem.downloadAsync(uri, fileUri);
-
-      // 🔥 Convert to content URI (FIX)
-      const contentUri = await FileSystem.getContentUriAsync(downloaded.uri);
+      const contentUri = await FileSystem.getContentUriAsync(uri);
 
       await IntentLauncher.startActivityAsync(
         "android.intent.action.ATTACH_DATA",
         {
-          data: contentUri, // ✅ IMPORTANT
+          data: contentUri,
           type: "image/*",
-          flags: 3,
-          extra: {
-            "android.intent.extra.STREAM": contentUri,
-          },
+          flags: 1,
         },
       );
-    } catch (e) {
-      console.log("APPLY ERROR:", e);
-      Alert.alert("Error", "Failed to open wallpaper chooser");
+    } catch (e: any) {
+      console.log("ERROR:", e);
+      Alert.alert("Error", e?.message || "Failed");
     }
   };
 

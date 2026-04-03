@@ -1,6 +1,4 @@
 import { AntDesign, Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
 import { useRef, useState } from "react";
 import {
   Animated,
@@ -17,6 +15,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import WallpaperLogo from "../../../assets/images/appIcon.png";
+import { useAuthStore } from "../../store/authStore";
 
 const { width, height } = Dimensions.get("window");
 
@@ -46,6 +45,7 @@ export default function Onboarding() {
   const insets = useSafeAreaInsets();
   const [active, setActive] = useState(0);
   const flatRef = useRef<FlatList>(null);
+  const { signInWithGoogle, isLoading } = useAuthStore();
 
   // Dote Animation
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -66,9 +66,8 @@ export default function Onboarding() {
     setActive(active - 1);
   };
 
-  const goToLogin = async () => {
-    await AsyncStorage.setItem("onboarded", "true");
-    router.replace("/(tabs)");
+  const handleGoogleLogin = async () => {
+    await signInWithGoogle();
   };
 
   // Page 4 — Login screen
@@ -103,12 +102,13 @@ export default function Onboarding() {
 
         {/* Google Button */}
         <TouchableOpacity
-          onPress={goToLogin}
+          onPress={handleGoogleLogin}
+          disabled={isLoading}
           className="w-full h-[55] rounded-full bg-white items-center justify-center flex-row gap-3"
         >
           <AntDesign name="google" size={20} color="#111" />
           <Text style={{ color: "#111111", fontWeight: "700", fontSize: 18 }}>
-            Continue with Google
+            {isLoading ? "Signing in..." : "Continue with Google"}
           </Text>
         </TouchableOpacity>
       </SafeAreaView>
