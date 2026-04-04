@@ -10,7 +10,13 @@ import { useAuthStore } from "../store/authStore";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // ✅ 1. Listen for auth state changes (handles token refresh, sign out, etc.)
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/onboarding");
+    }
+  }, [isAuthenticated]);
+
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {

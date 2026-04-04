@@ -25,21 +25,21 @@ export type Collection = {
 // Replace these with your real local image files inside assets/wallpapers/
 // Naming: w1.jpg, w2.jpg ... w8.jpg
 // ─────────────────────────────────────────────────────────────────────────────
-const W1 = require("../../assets/wallpapers/W1.png");
-const W2 = require("../../assets/wallpapers/W2.png");
-const W3 = require("../../assets/wallpapers/W3.png");
-const W4 = require("../../assets/wallpapers/W4.png");
-const W5 = require("../../assets/wallpapers/W5.png");
-const W6 = require("../../assets/wallpapers/W6.png");
-const W7 = require("../../assets/wallpapers/W7.png");
-const W8 = require("../../assets/wallpapers/W8.png");
-const W9 = require("../../assets/wallpapers/W9.png");
-const W10 = require("../../assets/wallpapers/W10.png");
+const W1 = require("../../assets/wallpapers/W1.jpg");
+const W2 = require("../../assets/wallpapers/W2.jpg");
+const W3 = require("../../assets/wallpapers/W3.jpg");
+const W4 = require("../../assets/wallpapers/W4.jpg");
+const W5 = require("../../assets/wallpapers/W5.jpg");
+const W6 = require("../../assets/wallpapers/W6.jpg");
+const W7 = require("../../assets/wallpapers/W7.jpg");
+const W8 = require("../../assets/wallpapers/W8.jpg");
+const W9 = require("../../assets/wallpapers/W9.jpg");
+const W10 = require("../../assets/wallpapers/W10.jpg");
 
 // Banner images for collection page carousel
-const B1 = require("../../assets/onboarding/B1.png");
-const B2 = require("../../assets/onboarding/B2.png");
-const B3 = require("../../assets/onboarding/B3.png");
+const B1 = require("../../assets/onboarding/B1.jpg");
+const B2 = require("../../assets/onboarding/B2.jpg");
+const B3 = require("../../assets/onboarding/B3.jpg");
 
 export const BANNER_IMAGES = [
   { id: "b1", image: B1, label: "Banner 1" },

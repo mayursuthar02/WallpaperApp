@@ -1,5 +1,5 @@
-// import * as FileSystem from "expo-file-system/legacy";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
+// import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 
 import { getImageSource } from "@/src/utils/image";
@@ -105,6 +105,30 @@ export default function WallpaperDetail() {
   };
 
   // Download Wallpaper Feature
+  // const downloadWallpaper = async () => {
+  //   try {
+  //     const hasPermission = await getPermission();
+  //     if (!hasPermission) return;
+
+  //     let uri = wallpaper.image;
+
+  //     if (typeof uri !== "string") {
+  //       const asset = RNImage.resolveAssetSource(uri);
+  //       uri = asset.uri;
+  //     }
+
+  //     console.log("LOCAL URI:", uri);
+
+  //     const asset = await MediaLibrary.createAssetAsync(uri);
+  //     await MediaLibrary.createAlbumAsync("Wallpaper", asset, false);
+
+  //     Alert.alert("Success ✅", "Wallpaper saved!");
+  //   } catch (e: any) {
+  //     console.log("ERROR:", e);
+  //     Alert.alert("Error", e?.message || "Failed");
+  //   }
+  // };
+
   const downloadWallpaper = async () => {
     try {
       const hasPermission = await getPermission();
@@ -112,14 +136,23 @@ export default function WallpaperDetail() {
 
       let uri = wallpaper.image;
 
+      // handle local image
       if (typeof uri !== "string") {
         const asset = RNImage.resolveAssetSource(uri);
         uri = asset.uri;
       }
 
-      console.log("LOCAL URI:", uri);
+      // 👉 FIX: create proper file with extension
+      const fileUri = FileSystem.cacheDirectory + `wallpaper_${Date.now()}.jpg`;
 
-      const asset = await MediaLibrary.createAssetAsync(uri);
+      // 👉 download first
+      const downloaded = await FileSystem.downloadAsync(uri, fileUri);
+
+      console.log("Downloaded URI:", downloaded.uri);
+
+      // 👉 now save to gallery
+      const asset = await MediaLibrary.createAssetAsync(downloaded.uri);
+
       await MediaLibrary.createAlbumAsync("Wallpaper", asset, false);
 
       Alert.alert("Success ✅", "Wallpaper saved!");
@@ -130,41 +163,6 @@ export default function WallpaperDetail() {
   };
 
   // Apply wallpaper Feature Dev
-  // const applyWallpaper = async () => {
-  //   try {
-  //     let uri = wallpaper.image;
-
-  //     if (typeof uri !== "string") {
-  //       const asset = RNImage.resolveAssetSource(uri);
-  //       uri = asset.uri;
-  //     }
-
-  //     // Save file
-  //     const fileUri = FileSystem.cacheDirectory + `wallpaper_${Date.now()}.jpg`;
-
-  //     const downloaded = await FileSystem.downloadAsync(uri, fileUri);
-
-  //     // 🔥 Convert to content URI (FIX)
-  //     const contentUri = await FileSystem.getContentUriAsync(downloaded.uri);
-
-  //     await IntentLauncher.startActivityAsync(
-  //       "android.intent.action.ATTACH_DATA",
-  //       {
-  //         data: contentUri, // ✅ IMPORTANT
-  //         type: "image/*",
-  //         flags: 3,
-  //         extra: {
-  //           "android.intent.extra.STREAM": contentUri,
-  //         },
-  //       },
-  //     );
-  //   } catch (e) {
-  //     console.log("APPLY ERROR:", e);
-  //     Alert.alert("Error", "Failed to open wallpaper chooser");
-  //   }
-  // };
-
-  // Apply Wallpaper for APK
   const applyWallpaper = async () => {
     try {
       let uri = wallpaper.image;
@@ -174,21 +172,56 @@ export default function WallpaperDetail() {
         uri = asset.uri;
       }
 
-      const contentUri = await FileSystem.getContentUriAsync(uri);
+      // Save file
+      const fileUri = FileSystem.cacheDirectory + `wallpaper_${Date.now()}.jpg`;
+
+      const downloaded = await FileSystem.downloadAsync(uri, fileUri);
+
+      // 🔥 Convert to content URI (FIX)
+      const contentUri = await FileSystem.getContentUriAsync(downloaded.uri);
 
       await IntentLauncher.startActivityAsync(
         "android.intent.action.ATTACH_DATA",
         {
-          data: contentUri,
+          data: contentUri, // ✅ IMPORTANT
           type: "image/*",
-          flags: 1,
+          flags: 3,
+          extra: {
+            "android.intent.extra.STREAM": contentUri,
+          },
         },
       );
-    } catch (e: any) {
-      console.log("ERROR:", e);
-      Alert.alert("Error", e?.message || "Failed");
+    } catch (e) {
+      console.log("APPLY ERROR:", e);
+      Alert.alert("Error", "Failed to open wallpaper chooser");
     }
   };
+
+  // Apply Wallpaper for APK
+  // const applyWallpaper = async () => {
+  //   try {
+  //     let uri = wallpaper.image;
+
+  //     if (typeof uri !== "string") {
+  //       const asset = RNImage.resolveAssetSource(uri);
+  //       uri = asset.uri;
+  //     }
+
+  //     const contentUri = await FileSystem.getContentUriAsync(uri);
+
+  //     await IntentLauncher.startActivityAsync(
+  //       "android.intent.action.ATTACH_DATA",
+  //       {
+  //         data: contentUri,
+  //         type: "image/*",
+  //         flags: 1,
+  //       },
+  //     );
+  //   } catch (e: any) {
+  //     console.log("ERROR:", e);
+  //     Alert.alert("Error", e?.message || "Failed");
+  //   }
+  // };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#111" }}>

@@ -1,6 +1,7 @@
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Dimensions,
   FlatList,
@@ -74,7 +75,7 @@ export default function Onboarding() {
   if (active === SLIDES.length) {
     return (
       <SafeAreaView
-        className="flex-1 bg-bg items-center justify-between px-8"
+        className="flex-1 bg-bg items-center justify-between px-8 relative"
         style={{
           paddingTop: insets.top + 12,
           paddingBottom: insets.bottom + 12,
@@ -111,6 +112,14 @@ export default function Onboarding() {
             {isLoading ? "Signing in..." : "Continue with Google"}
           </Text>
         </TouchableOpacity>
+
+        {isLoading && (
+          <View
+            className={`absolute bg-[#111] z-10 top-0 left-0 right-0 bottom-0 w-[${width}] h-[${height}] opacity-80 flex items-center justify-center`}
+          >
+            <ActivityIndicator size="large" color="#ffffff" />
+          </View>
+        )}
       </SafeAreaView>
     );
   }
@@ -138,8 +147,8 @@ export default function Onboarding() {
           <View style={{ width }} className="items-center pt-14 px-10">
             {/* Image Card */}
             <View
-              className="rounded-3xl overflow-hidden bg-card items-center justify-center"
-              style={{ width: width - 64, height: (width - 64) * 1.05 }}
+              className="rounded-3xl overflow-hidden items-center justify-center"
+              style={{ width: width, height: (width - 64) * 1.05 }}
             >
               <Image
                 source={item.image}
@@ -149,7 +158,7 @@ export default function Onboarding() {
             </View>
 
             {/* Dots */}
-            <View className="flex-row items-center gap-2 mt-8 mb-7">
+            <View className="flex-row items-center gap-2 mb-24">
               {SLIDES.map((_, i) => {
                 const inputRange = [
                   (i - 1) * width,
@@ -159,7 +168,7 @@ export default function Onboarding() {
 
                 const dotWidth = scrollX.interpolate({
                   inputRange,
-                  outputRange: [8, 24, 8],
+                  outputRange: [10, 20, 10],
                   extrapolate: "clamp",
                 });
 
@@ -174,9 +183,9 @@ export default function Onboarding() {
                     key={i}
                     style={{
                       width: dotWidth,
-                      height: 8,
+                      height: 4,
                       borderRadius: 4,
-                      backgroundColor: "#019CDF",
+                      backgroundColor: "#fff",
                       opacity,
                     }}
                   />
